@@ -12,21 +12,26 @@
 //
 
 import Foundation
-import CoreGraphics.CGBase
-import UIKit.UIColor
+import CoreGraphics
+import UIKit
 
-public class CandleChartDataSet: BarLineScatterCandleChartDataSet
+public class CandleChartDataSet: LineScatterCandleChartDataSet
 {
     /// the width of the candle-shadow-line in pixels. 
-    /// :default: 3.0
+    /// 
+    /// **default**: 3.0
     public var shadowWidth = CGFloat(1.5)
 
     /// the space between the candle entries
-    /// :default: 0.1 (10%)
+    /// 
+    /// **default**: 0.1 (10%)
     private var _bodySpace = CGFloat(0.1)
     
     /// the color of the shadow line
     public var shadowColor: UIColor?
+    
+    /// use candle color for the shadow
+    public var shadowColorSameAsCandle = false
     
     /// color for open <= close
     public var decreasingColor: UIColor?
@@ -40,61 +45,80 @@ public class CandleChartDataSet: BarLineScatterCandleChartDataSet
     /// Are increasing values drawn as filled?
     public var increasingFilled = true
     
-    public override init(yVals: [ChartDataEntry]?, label: String)
+    public override init(yVals: [ChartDataEntry]?, label: String?)
     {
-        super.init(yVals: yVals, label: label);
+        super.init(yVals: yVals, label: label)
     }
     
-    internal override func calcMinMax()
+    internal override func calcMinMax(start start: Int, end: Int)
     {
         if (yVals.count == 0)
         {
-            return;
+            return
         }
         
-        var entries = yVals as! [CandleChartDataEntry];
-
-        _yMin = entries[0].low;
-        _yMax = entries[0].high;
-
-        for (var i = 0; i < entries.count; i++)
+        var entries = yVals as! [CandleChartDataEntry]
+        
+        var endValue : Int
+        
+        if end == 0 || end >= entries.count
         {
-            var e = entries[i];
-
+            endValue = entries.count - 1
+        }
+        else
+        {
+            endValue = end
+        }
+        
+        _lastStart = start
+        _lastEnd = end
+        
+        _yMin = entries[start].low
+        _yMax = entries[start].high
+        
+        for (var i = start + 1; i <= endValue; i++)
+        {
+            let e = entries[i]
+            
             if (e.low < _yMin)
             {
-                _yMin = e.low;
+                _yMin = e.low
             }
-
+            
             if (e.high > _yMax)
             {
-                _yMax = e.high;
+                _yMax = e.high
             }
         }
     }
 
     /// the space that is left out on the left and right side of each candle,
-    /// :default: 0.1 (10%), max 0.45, min 0.0
+    /// **default**: 0.1 (10%), max 0.45, min 0.0
     public var bodySpace: CGFloat
     {
         set
         {
-            _bodySpace = newValue;
-            
-            if (_bodySpace < 0.0)
+            if (newValue < 0.0)
             {
-                _bodySpace = 0.0;
+                _bodySpace = 0.0
             }
-            if (_bodySpace > 0.45)
+            else if (newValue > 0.45)
             {
-                _bodySpace = 0.45;
+                _bodySpace = 0.45
+            }
+            else
+            {
+                _bodySpace = newValue
             }
         }
         get
         {
-            return _bodySpace;
+            return _bodySpace
         }
     }
+    
+    /// Is the shadow color same as the candle color?
+    public var isShadowColorSameAsCandle: Bool { return shadowColorSameAsCandle }
     
     /// Are increasing values drawn as filled?
     public var isIncreasingFilled: Bool { return increasingFilled; }

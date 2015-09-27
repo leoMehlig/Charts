@@ -41,6 +41,8 @@
                      @{@"key": @"animateXY", @"label": @"Animate XY"},
                      @{@"key": @"saveToGallery", @"label": @"Save to Camera Roll"},
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
+                     @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
+                     @{@"key": @"toggleShadowColorSameAsCandle", @"label": @"Toggle shadow same color"},
                      ];
     
     _chartView.delegate = self;
@@ -54,7 +56,7 @@
     
     ChartXAxis *xAxis = _chartView.xAxis;
     xAxis.labelPosition = XAxisLabelPositionBottom;
-    xAxis.spaceBetweenLabels = 2.f;
+    xAxis.spaceBetweenLabels = 2.0;
     xAxis.drawGridLinesEnabled = NO;
     
     ChartYAxis *leftAxis = _chartView.leftAxis;
@@ -68,8 +70,8 @@
     
     _chartView.legend.enabled = NO;
     
-    _sliderX.value = 39.f;
-    _sliderY.value = 100.f;
+    _sliderX.value = 39.0;
+    _sliderY.value = 100.0;
     [self slidersValueChanged:nil];
 }
 
@@ -79,7 +81,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setDataCount:(int)count range:(float)range
+- (void)setDataCount:(int)count range:(double)range
 {
     NSMutableArray *xVals = [[NSMutableArray alloc] init];
     
@@ -92,12 +94,12 @@
     
     for (int i = 0; i < count; i++)
     {
-        float mult = (range + 1);
-        float val = (float) (arc4random_uniform(40)) + mult;
-        float high =(float) (arc4random_uniform(9)) + 8.f;
-        float low =(float) (arc4random_uniform(9)) + 8.f;
-        float open =(float) (arc4random_uniform(6)) + 1.f;
-        float close =(float) (arc4random_uniform(6)) + 1.f;
+        double mult = (range + 1);
+        double val = (double) (arc4random_uniform(40)) + mult;
+        double high = (double) (arc4random_uniform(9)) + 8.0;
+        double low = (double) (arc4random_uniform(9)) + 8.0;
+        double open = (double) (arc4random_uniform(6)) + 1.0;
+        double close = (double) (arc4random_uniform(6)) + 1.0;
         BOOL even = i % 2 == 0;
         [yVals1 addObject:[[CandleChartDataEntry alloc] initWithXIndex:i shadowH:val + high shadowL:val - low open:even ? val + open : val - open close:even ? val - close : val + close]];
     }
@@ -107,7 +109,7 @@
     [set1 setColor:[UIColor colorWithWhite:80/255.f alpha:1.f]];
     
     set1.shadowColor = UIColor.darkGrayColor;
-    set1.shadowWidth = 0.7f;
+    set1.shadowWidth = 0.7;
     set1.decreasingColor = UIColor.redColor;
     set1.decreasingFilled = NO;
     set1.increasingColor = [UIColor colorWithRed:122/255.f green:242/255.f blue:84/255.f alpha:1.f];
@@ -200,6 +202,22 @@
         _chartView.pinchZoomEnabled = !_chartView.isPinchZoomEnabled;
         
         [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleAutoScaleMinMax"])
+    {
+        _chartView.autoScaleMinMaxEnabled = !_chartView.isAutoScaleMinMaxEnabled;
+        [_chartView notifyDataSetChanged];
+    }
+    
+    if ([key isEqualToString:@"toggleShadowColorSameAsCandle"])
+    {
+        for (CandleChartDataSet *set in _chartView.data.dataSets)
+        {
+            set.shadowColorSameAsCandle = !set.shadowColorSameAsCandle;
+        }
+        
+        [_chartView notifyDataSetChanged];
     }
 }
 

@@ -39,6 +39,7 @@
                      @{@"key": @"animateXY", @"label": @"Animate XY"},
                      @{@"key": @"saveToGallery", @"label": @"Save to Camera Roll"},
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
+                     @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
                      ];
     
     _chartView.delegate = self;
@@ -61,9 +62,9 @@
     
     ChartYAxis *yl = _chartView.leftAxis;
     yl.labelFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:10.f];
-    yl.spaceTop = 0.3f;
+    yl.spaceTop = 0.3;
     yl.startAtZeroEnabled = NO;
-    yl.spaceBottom = 0.3f;
+    yl.spaceBottom = 0.3;
 
     _chartView.rightAxis.enabled = NO;
     
@@ -71,8 +72,8 @@
     xl.labelPosition = XAxisLabelPositionBottom;
     xl.labelFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:10.f];
     
-    _sliderX.value = 5.f;
-    _sliderY.value = 50.f;
+    _sliderX.value = 5.0;
+    _sliderY.value = 50.0;
     [self slidersValueChanged:nil];
 }
 
@@ -82,7 +83,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setDataCount:(int)count range:(float)range
+- (void)setDataCount:(int)count range:(double)range
 {
     NSMutableArray *xVals = [[NSMutableArray alloc] init];
     
@@ -97,16 +98,16 @@
     
     for (int i = 0; i < count; i++)
     {
-        float val = (float) (arc4random_uniform(range));
-        float size = (float) (arc4random_uniform(range));
+        double val = (double) (arc4random_uniform(range));
+        double size = (double) (arc4random_uniform(range));
         [yVals1 addObject:[[BubbleChartDataEntry alloc] initWithXIndex:i value:val size:size]];
         
-        val = (float) (arc4random_uniform(range));
-        size = (float) (arc4random_uniform(range));
+        val = (double) (arc4random_uniform(range));
+        size = (double) (arc4random_uniform(range));
         [yVals2 addObject:[[BubbleChartDataEntry alloc] initWithXIndex:i value:val size:size]];
         
-        val = (float) (arc4random_uniform(range));
-        size = (float) (arc4random_uniform(range));
+        val = (double) (arc4random_uniform(range));
+        size = (double) (arc4random_uniform(range));
         [yVals3 addObject:[[BubbleChartDataEntry alloc] initWithXIndex:i value:val size:size]];
     }
     
@@ -127,7 +128,7 @@
     
     BubbleChartData *data = [[BubbleChartData alloc] initWithXVals:xVals dataSets:dataSets];
     [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:7.f]];
-    [data setHighlightCircleWidth: 1.5f];
+    [data setHighlightCircleWidth: 1.5];
     [data setValueTextColor:UIColor.whiteColor];
     
     _chartView.data = data;
@@ -215,6 +216,12 @@
         _chartView.pinchZoomEnabled = !_chartView.isPinchZoomEnabled;
         
         [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleAutoScaleMinMax"])
+    {
+        _chartView.autoScaleMinMaxEnabled = !_chartView.isAutoScaleMinMaxEnabled;
+        [_chartView notifyDataSetChanged];
     }
 }
 

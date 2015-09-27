@@ -42,6 +42,7 @@
                      @{@"key": @"toggleStartZero", @"label": @"Toggle StartZero"},
                      @{@"key": @"saveToGallery", @"label": @"Save to Camera Roll"},
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
+                     @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
                      ];
     
     _chartView.delegate = self;
@@ -69,14 +70,14 @@
     leftAxis.valueFormatter = [[NSNumberFormatter alloc] init];
     leftAxis.valueFormatter.maximumFractionDigits = 1;
     leftAxis.drawGridLinesEnabled = NO;
-    leftAxis.spaceTop = 0.25f;
+    leftAxis.spaceTop = 0.25;
     
     _chartView.rightAxis.enabled = NO;
     _chartView.valueFormatter = [[NSNumberFormatter alloc] init];
     _chartView.valueFormatter.maximumFractionDigits = 1;
     
-    _sliderX.value = 9.f;
-    _sliderY.value = 100.f;
+    _sliderX.value = 9.0;
+    _sliderY.value = 100.0;
     [self slidersValueChanged:nil];
 }
 
@@ -86,7 +87,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setDataCount:(int)count range:(float)range
+- (void)setDataCount:(int)count range:(double)range
 {
     NSMutableArray *xVals = [[NSMutableArray alloc] init];
     
@@ -99,17 +100,17 @@
     NSMutableArray *yVals2 = [[NSMutableArray alloc] init];
     NSMutableArray *yVals3 = [[NSMutableArray alloc] init];
     
-    float mult = range * 1000.f;
+    double mult = range * 1000.f;
     
     for (int i = 0; i < count; i++)
     {
-        float val = (float) (arc4random_uniform(mult) + 3.f);
+        double val = (double) (arc4random_uniform(mult) + 3.0);
         [yVals1 addObject:[[BarChartDataEntry alloc] initWithValue:val xIndex:i]];
         
-        val = (float) (arc4random_uniform(mult) + 3.f);
+        val = (double) (arc4random_uniform(mult) + 3.0);
         [yVals2 addObject:[[BarChartDataEntry alloc] initWithValue:val xIndex:i]];
         
-        val = (float) (arc4random_uniform(mult) + 3.f);
+        val = (double) (arc4random_uniform(mult) + 3.0);
         [yVals3 addObject:[[BarChartDataEntry alloc] initWithValue:val xIndex:i]];
     }
     
@@ -126,7 +127,7 @@
     [dataSets addObject:set3];
     
     BarChartData *data = [[BarChartData alloc] initWithXVals:xVals dataSets:dataSets];
-    data.groupSpace = 0.8f;
+    data.groupSpace = 0.8;
     [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:10.f]];
     
     _chartView.data = data;
@@ -191,6 +192,12 @@
         _chartView.pinchZoomEnabled = !_chartView.isPinchZoomEnabled;
         
         [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleAutoScaleMinMax"])
+    {
+        _chartView.autoScaleMinMaxEnabled = !_chartView.isAutoScaleMinMaxEnabled;
+        [_chartView notifyDataSetChanged];
     }
 }
 

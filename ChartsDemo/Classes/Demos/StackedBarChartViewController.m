@@ -42,6 +42,7 @@
                      @{@"key": @"toggleStartZero", @"label": @"Toggle StartZero"},
                      @{@"key": @"saveToGallery", @"label": @"Save to Camera Roll"},
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
+                     @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
                      ];
     
     _chartView.delegate = self;
@@ -50,8 +51,8 @@
     _chartView.noDataTextDescription = @"You need to provide data for the chart.";
     
     _chartView.maxVisibleValueCount = 60;
-    _chartView.drawValuesForWholeStackEnabled = YES;
     _chartView.pinchZoomEnabled = NO;
+    _chartView.drawGridBackgroundEnabled = NO;
     _chartView.drawBarShadowEnabled = NO;
     _chartView.drawValueAboveBarEnabled = NO;
     
@@ -61,9 +62,7 @@
     leftAxis.valueFormatter.negativeSuffix = @" $";
     leftAxis.valueFormatter.positiveSuffix = @" $";
     
-    ChartYAxis *rightAxis = _chartView.rightAxis;
-    rightAxis.valueFormatter = leftAxis.valueFormatter;
-    rightAxis.drawGridLinesEnabled = NO;
+    _chartView.rightAxis.enabled = NO;
     
     ChartXAxis *xAxis = _chartView.xAxis;
     xAxis.labelPosition = XAxisLabelPositionTop;
@@ -71,12 +70,12 @@
     ChartLegend *l = _chartView.legend;
     l.position = ChartLegendPositionBelowChartRight;
     l.form = ChartLegendFormSquare;
-    l.formSize = 8.f;
-    l.formToTextSpace = 4.f;
-    l.xEntrySpace = 6.f;
+    l.formSize = 8.0;
+    l.formToTextSpace = 4.0;
+    l.xEntrySpace = 6.0;
     
-    _sliderX.value = 11.f;
-    _sliderY.value = 100.f;
+    _sliderX.value = 11.0;
+    _sliderY.value = 100.0;
     [self slidersValueChanged:nil];
 }
 
@@ -86,7 +85,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setDataCount:(int)count range:(float)range
+- (void)setDataCount:(int)count range:(double)range
 {
     NSMutableArray *xVals = [[NSMutableArray alloc] init];
     
@@ -99,10 +98,10 @@
     
     for (int i = 0; i < count; i++)
     {
-        float mult = (range + 1);
-        float val1 = (float) (arc4random_uniform(mult) + mult / 3);
-        float val2 = (float) (arc4random_uniform(mult) + mult / 3);
-        float val3 = (float) (arc4random_uniform(mult) + mult / 3);
+        double mult = (range + 1);
+        double val1 = (double) (arc4random_uniform(mult) + mult / 3);
+        double val2 = (double) (arc4random_uniform(mult) + mult / 3);
+        double val3 = (double) (arc4random_uniform(mult) + mult / 3);
         
         [yVals addObject:[[BarChartDataEntry alloc] initWithValues:@[@(val1), @(val2), @(val3)] xIndex:i]];
     }
@@ -186,6 +185,12 @@
         
         [_chartView setNeedsDisplay];
     }
+    
+    if ([key isEqualToString:@"toggleAutoScaleMinMax"])
+    {
+        _chartView.autoScaleMinMaxEnabled = !_chartView.isAutoScaleMinMaxEnabled;
+        [_chartView notifyDataSetChanged];
+    }
 }
 
 #pragma mark - Actions
@@ -202,7 +207,7 @@
 
 - (void)chartValueSelected:(ChartViewBase * __nonnull)chartView entry:(ChartDataEntry * __nonnull)entry dataSetIndex:(NSInteger)dataSetIndex highlight:(ChartHighlight * __nonnull)highlight
 {
-    NSLog(@"chartValueSelected");
+    NSLog(@"chartValueSelected, stack-index %ld", (long)highlight.stackIndex);
 }
 
 - (void)chartValueNothingSelected:(ChartViewBase * __nonnull)chartView

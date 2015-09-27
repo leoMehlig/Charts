@@ -10,27 +10,28 @@
 //
 
 import Foundation
+import CoreGraphics
 
 public class BubbleChartDataEntry: ChartDataEntry
 {
     /// The size of the bubble.
     public var size = CGFloat(0.0)
     
-    /// :xIndex: The index on the x-axis.
-    /// :val: The value on the y-axis.
-    /// :size: The size of the bubble.
-    public init(xIndex: Int, value: Float, size: CGFloat)
+    /// - parameter xIndex: The index on the x-axis.
+    /// - parameter val: The value on the y-axis.
+    /// - parameter size: The size of the bubble.
+    public init(xIndex: Int, value: Double, size: CGFloat)
     {
         super.init(value: value, xIndex: xIndex)
         
         self.size = size
     }
     
-    /// :xIndex: The index on the x-axis.
-    /// :val: The value on the y-axis.
-    /// :size: The size of the bubble.
-    /// :data: Spot for additional data this Entry represents.
-    public init(xIndex: Int, value: Float, size: CGFloat, data: AnyObject?)
+    /// - parameter xIndex: The index on the x-axis.
+    /// - parameter val: The value on the y-axis.
+    /// - parameter size: The size of the bubble.
+    /// - parameter data: Spot for additional data this Entry represents.
+    public init(xIndex: Int, value: Double, size: CGFloat, data: AnyObject?)
     {
         super.init(value: value, xIndex: xIndex, data: data)
       
@@ -41,8 +42,8 @@ public class BubbleChartDataEntry: ChartDataEntry
     
     public override func copyWithZone(zone: NSZone) -> AnyObject
     {
-        var copy = super.copyWithZone(zone) as! BubbleChartDataEntry;
-        copy.size = size;
-        return copy;
+        let copy = super.copyWithZone(zone) as! BubbleChartDataEntry
+        copy.size = size
+        return copy
     }
 }

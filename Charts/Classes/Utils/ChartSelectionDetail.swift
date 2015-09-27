@@ -1,5 +1,5 @@
 //
-//  ChartselInfo.swift
+//  ChartSelectionDetail.swift
 //  Charts
 //
 //  Created by Daniel Cohen Gindi on 23/2/15.
@@ -14,100 +14,100 @@
 
 import Foundation
 
-public class ChartSelInfo: NSObject
+public class ChartSelectionDetail: NSObject
 {
-    private var _value = Float(0)
+    private var _value = Double(0)
     private var _dataSetIndex = Int(0)
     private var _dataSet: ChartDataSet!
     
     public override init()
     {
-        super.init();
+        super.init()
     }
     
-    public init(value: Float, dataSetIndex: Int, dataSet: ChartDataSet)
+    public init(value: Double, dataSetIndex: Int, dataSet: ChartDataSet)
     {
-        super.init();
+        super.init()
         
-        _value = value;
-        _dataSetIndex = dataSetIndex;
-        _dataSet = dataSet;
+        _value = value
+        _dataSetIndex = dataSetIndex
+        _dataSet = dataSet
     }
     
-    public var value: Float
+    public var value: Double
     {
-        return _value;
+        return _value
     }
     
     public var dataSetIndex: Int
     {
-        return _dataSetIndex;
+        return _dataSetIndex
     }
     
     public var dataSet: ChartDataSet?
     {
-        return _dataSet;
+        return _dataSet
     }
     
     // MARK: NSObject
     
     public override func isEqual(object: AnyObject?) -> Bool
     {
-        if (object == nil)
+        if (object === nil)
         {
-            return false;
+            return false
         }
         
         if (!object!.isKindOfClass(self.dynamicType))
         {
-            return false;
+            return false
         }
         
         if (object!.value != _value)
         {
-            return false;
+            return false
         }
         
         if (object!.dataSetIndex != _dataSetIndex)
         {
-            return false;
+            return false
         }
         
         if (object!.dataSet !== _dataSet)
         {
-            return false;
+            return false
         }
         
-        return true;
+        return true
     }
 }
 
-public func ==(lhs: ChartSelInfo, rhs: ChartSelInfo) -> Bool
+public func ==(lhs: ChartSelectionDetail, rhs: ChartSelectionDetail) -> Bool
 {
     if (lhs === rhs)
     {
-        return true;
+        return true
     }
     
     if (!lhs.isKindOfClass(rhs.dynamicType))
     {
-        return false;
+        return false
     }
     
     if (lhs.value != rhs.value)
     {
-        return false;
+        return false
     }
     
     if (lhs.dataSetIndex != rhs.dataSetIndex)
     {
-        return false;
+        return false
     }
     
     if (lhs.dataSet !== rhs.dataSet)
     {
-        return false;
+        return false
     }
     
-    return true;
+    return true
 }
