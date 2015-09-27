@@ -37,7 +37,6 @@ public class ChartXAxis: ChartAxisBase
     /// **default**: 4
     public var spaceBetweenLabels = Int(4)
     
-<<<<<<< HEAD
     /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when (index % modulus) == 0.
     public var axisLabelModulus = Int(1) {
         didSet {
@@ -70,11 +69,6 @@ public class ChartXAxis: ChartAxisBase
             }
         }
     }
-
-=======
-    /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when `(index % modulus) == 0`.
-    public var axisLabelModulus = Int(1)
->>>>>>> danielgindi/master
     
     /// Is axisLabelModulus a custom value or auto calculated? If false, then it's auto, if true, then custom.
     /// 
