@@ -45,15 +45,15 @@ public class ChartXAxis: ChartAxisBase
     }
     
     /// the modulus that makes sure that certain indexes are drawn, unless there are too many.
-    public var requieredAxisLabelModulus: Int? {
+    public var requiredAxisLabelModulus: Int? {
         didSet {
             updateAxisLabelModulus()
         }
     }
     
-    //changes the axisLabelModulus to an higher value that matches the requieredAxisLabelModulus
+    //changes the axisLabelModulus to an higher value that matches the requiredAxisLabelModulus
     private func updateAxisLabelModulus() {
-        if let reqModulus = requieredAxisLabelModulus {
+        if let reqModulus = requiredAxisLabelModulus {
             if reqModulus % axisLabelModulus != 0 && axisLabelModulus % reqModulus != 0{
                 if reqModulus > axisLabelModulus {
                     var newModulus = reqModulus
