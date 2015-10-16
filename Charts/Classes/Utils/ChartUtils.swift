@@ -16,8 +16,10 @@ import Foundation
 import UIKit
 import Darwin
 
-internal class ChartUtils
+public class ChartUtils
 {
+    private static var _defaultValueFormatter: NSNumberFormatter = ChartUtils.generateDefaultValueFormatter()
+    
     internal struct Math
     {
         internal static let FDEG2RAD = CGFloat(M_PI / 180.0)
@@ -118,7 +120,7 @@ internal class ChartUtils
         )
     }
     
-    internal class func drawText(context context: CGContext?, text: String, var point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?)
+    public class func drawText(context context: CGContext, text: String, var point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?)
     {
         if (align == .Center)
         {
@@ -134,7 +136,7 @@ internal class ChartUtils
         UIGraphicsPopContext()
     }
     
-    internal class func drawMultilineText(context context: CGContext?, text: String, knownTextSize: CGSize, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
+    internal class func drawMultilineText(context context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
     {
         var rect = CGRect(origin: CGPoint(), size: knownTextSize)
         rect.origin.x += point.x
@@ -154,7 +156,7 @@ internal class ChartUtils
         UIGraphicsPopContext()
     }
     
-    internal class func drawMultilineText(context context: CGContext?, text: String, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
+    internal class func drawMultilineText(context context: CGContext, text: String, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
     {
         let rect = text.boundingRectWithSize(constrainedToSize, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
         drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
@@ -171,6 +173,21 @@ internal class ChartUtils
         return angle % 360.0
     }
     
+    private class func generateDefaultValueFormatter() -> NSNumberFormatter
+    {
+        let formatter = NSNumberFormatter()
+        formatter.minimumIntegerDigits = 1
+        formatter.maximumFractionDigits = 1
+        formatter.minimumFractionDigits = 1
+        formatter.usesGroupingSeparator = true
+        return formatter
+    }
+    
+    /// - returns: the default value formatter used for all chart components that needs a default
+    internal class func defaultValueFormatter() -> NSNumberFormatter
+    {
+        return _defaultValueFormatter
+    }
     
     /// MARK: - Bridging functions
     
