@@ -37,7 +37,6 @@ public class ChartXAxis: ChartAxisBase
     /// **default**: 4
     public var spaceBetweenLabels = Int(4)
     
-<<<<<<< HEAD
     /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when (index % modulus) == 0.
     public var axisLabelModulus = Int(1) {
         didSet {
@@ -46,15 +45,15 @@ public class ChartXAxis: ChartAxisBase
     }
     
     /// the modulus that makes sure that certain indexes are drawn, unless there are too many.
-    public var requieredAxisLabelModulus: Int? {
+    public var requiredAxisLabelModulus: Int? {
         didSet {
             updateAxisLabelModulus()
         }
     }
     
-    //changes the axisLabelModulus to an higher value that matches the requieredAxisLabelModulus
+    //changes the axisLabelModulus to an higher value that matches the requiredAxisLabelModulus
     private func updateAxisLabelModulus() {
-        if let reqModulus = requieredAxisLabelModulus {
+        if let reqModulus = requiredAxisLabelModulus {
             if reqModulus % axisLabelModulus != 0 && axisLabelModulus % reqModulus != 0{
                 if reqModulus > axisLabelModulus {
                     var newModulus = reqModulus
@@ -70,11 +69,6 @@ public class ChartXAxis: ChartAxisBase
             }
         }
     }
-
-=======
-    /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when `(index % modulus) == 0`.
-    public var axisLabelModulus = Int(1)
->>>>>>> danielgindi/master
     
     /// Is axisLabelModulus a custom value or auto calculated? If false, then it's auto, if true, then custom.
     /// 
