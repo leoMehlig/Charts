@@ -31,6 +31,10 @@ public class ChartXAxis: ChartAxisBase
     public var labelWidth = CGFloat(1.0)
     public var labelHeight = CGFloat(1.0)
     
+    internal var labelHeightWithMargin: CGFloat {
+        return labelHeight * (labelRotation == 0 || labelRotation == CGFloat(M_PI) ? 2 : 1)
+    }
+    
     /// the space that should be left out (in characters) between the x-axis labels
     /// This only applies if the number of labels that will be skipped in between drawn axis labels is not custom set.
     /// 
@@ -98,6 +102,9 @@ public class ChartXAxis: ChartAxisBase
             _xAxisValueFormatter = newValue ?? ChartDefaultXAxisValueFormatter()
         }
     }
+    
+    /// the rotation of the labels in radians
+    public var labelRotation: CGFloat = 0.0
     
     /// the position of the x-labels relative to the chart
     public var labelPosition = XAxisLabelPosition.Top

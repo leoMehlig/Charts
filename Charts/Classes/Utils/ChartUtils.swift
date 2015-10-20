@@ -64,7 +64,7 @@ public class ChartUtils
             return number + DBL_EPSILON
         }
     }
-
+    
     /// - returns: the index of the DataSet that contains the closest value on the y-axis. This will return -Integer.MAX_VALUE if failure.
     internal class func closestDataSetIndex(valsAtIndex: [ChartSelectionDetail], value: Double, axis: ChartYAxis.AxisDependency?) -> Int
     {
@@ -130,17 +130,20 @@ public class ChartUtils
         {
             point.x -= text.sizeWithAttributes(attributes).width
         }
-    
+        
         UIGraphicsPushContext(context)
         (text as NSString).drawAtPoint(point, withAttributes: attributes)
         UIGraphicsPopContext()
     }
     
-    internal class func drawMultilineText(context context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
+    internal class func drawMultilineText(context context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, angle: CGFloat = 0.0, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
     {
         var rect = CGRect(origin: CGPoint(), size: knownTextSize)
         rect.origin.x += point.x
         rect.origin.y += point.y
+        if constrainedToSize.height > rect.height {
+            rect.origin.y += (constrainedToSize.height - rect.height) / 2
+        }
         
         if (align == .Center)
         {
@@ -152,14 +155,25 @@ public class ChartUtils
         }
         
         UIGraphicsPushContext(context)
+        CGContextSaveGState(context)
+        defer {
+            CGContextRestoreGState(context)
+            UIGraphicsPopContext()
+        }
+        if angle != 0.0 {
+            let t = CGAffineTransformMakeTranslation(rect.origin.x + rect.width / 2, rect.origin.y + rect.height / 2)
+            CGContextConcatCTM(context, t)
+            CGContextConcatCTM(context, CGAffineTransformMakeRotation(angle))
+            CGContextConcatCTM(context, CGAffineTransformInvert(t))
+        }
         (text as NSString).drawWithRect(rect, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
-        UIGraphicsPopContext()
+
     }
     
-    internal class func drawMultilineText(context context: CGContext, text: String, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
+    internal class func drawMultilineText(context context: CGContext, text: String, point: CGPoint, angle: CGFloat = 0.0, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
     {
         let rect = text.boundingRectWithSize(constrainedToSize, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
-        drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
+        drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, angle: angle, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
     }
     
     /// - returns: an angle between 0.0 < 360.0 (not less than zero, less than 360)
@@ -172,6 +186,7 @@ public class ChartUtils
         
         return angle % 360.0
     }
+    
     
     private class func generateDefaultValueFormatter() -> NSNumberFormatter
     {
@@ -243,5 +258,11 @@ public class ChartUtils
             newArray.append(object as? String)
         }
         return newArray
+    }
+}
+
+extension CGSize {
+    func rotateBy(angle: CGFloat) -> CGSize {
+        return CGRectApplyAffineTransform(CGRect(origin: CGPointZero, size: self), CGAffineTransformMakeRotation(angle)).size
     }
 }

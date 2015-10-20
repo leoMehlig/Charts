@@ -48,7 +48,7 @@ public class ChartXAxisRendererBarChart: ChartXAxisRenderer
         
         var position = CGPoint(x: 0.0, y: 0.0)
         
-        var labelMaxSize = CGSize()
+        var labelMaxSize = CGSize(width: 0, height: _xAxis.labelHeight)
         
         if (_xAxis.isWordWrapEnabled)
         {

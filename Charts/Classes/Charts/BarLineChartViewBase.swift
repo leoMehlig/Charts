@@ -448,7 +448,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
 
             if (xAxis.isEnabled && xAxis.isDrawLabelsEnabled)
             {
-                let xlabelheight = xAxis.labelHeight * 2.0
+                let xlabelheight = xAxis.labelHeightWithMargin
                 
                 // offsets for x-labels
                 if (xAxis.labelPosition == .Bottom)

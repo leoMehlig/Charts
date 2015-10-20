@@ -37,10 +37,12 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
             a += "h"
         }
         
-        let widthText = a as NSString
+        let labelSize = CGSize(
+            width: (a as NSString).sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont]).width,
+            height: _xAxis.labelFont.lineHeight).rotateBy(_xAxis.labelRotation)
         
-        _xAxis.labelWidth = widthText.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont]).width
-        _xAxis.labelHeight = _xAxis.labelFont.lineHeight
+        _xAxis.labelWidth = labelSize.width
+        _xAxis.labelHeight = labelSize.height
         _xAxis.values = xValues
     }
     
@@ -137,7 +139,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         
         var position = CGPoint(x: 0.0, y: 0.0)
         
-        var labelMaxSize = CGSize()
+        var labelMaxSize = CGSize(width: 0, height: _xAxis.labelHeight)
         
         if (_xAxis.isWordWrapEnabled)
         {
@@ -179,7 +181,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
                         position.x += width / 2.0
                     }
                 }
-                
+
                 drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Center, attributes: labelAttrs, constrainedToSize: labelMaxSize)
             }
         }
@@ -188,7 +190,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
     internal func drawLabel(context context: CGContext, label: String, xIndex: Int, x: CGFloat, y: CGFloat, align: NSTextAlignment, attributes: [String: NSObject], constrainedToSize: CGSize)
     {
         let formattedLabel = _xAxis.valueFormatter?.stringForXValue(xIndex, original: label, viewPortHandler: viewPortHandler) ?? label
-        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), align: align, attributes: attributes, constrainedToSize: constrainedToSize)
+        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), angle: _xAxis.labelRotation, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
     }
     
     private var _gridLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
