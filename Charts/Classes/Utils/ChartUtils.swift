@@ -138,6 +138,7 @@ public class ChartUtils
     
     internal class func drawMultilineText(context context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, angle: CGFloat = 0.0, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
     {
+        
         var rect = CGRect(origin: CGPoint(), size: knownTextSize)
         rect.origin.x += point.x
         rect.origin.y += point.y
@@ -161,7 +162,7 @@ public class ChartUtils
             UIGraphicsPopContext()
         }
         if angle != 0.0 {
-            let t = CGAffineTransformMakeTranslation(rect.origin.x + rect.width / 2, rect.origin.y + rect.height / 2)
+            let t = CGAffineTransformMakeTranslation(rect.origin.x + rect.width, rect.origin.y + rect.height / 2)
             CGContextConcatCTM(context, t)
             CGContextConcatCTM(context, CGAffineTransformMakeRotation(angle))
             CGContextConcatCTM(context, CGAffineTransformInvert(t))
@@ -175,6 +176,7 @@ public class ChartUtils
         let rect = text.boundingRectWithSize(constrainedToSize, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
         drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, angle: angle, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
     }
+    
     
     /// - returns: an angle between 0.0 < 360.0 (not less than zero, less than 360)
     internal class func normalizedAngleFromAngle(var angle: CGFloat) -> CGFloat

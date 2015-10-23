@@ -926,7 +926,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         if (gestureRecognizer == _panGestureRecognizer)
         {
-            if (_dataNotSet || !_dragEnabled || !self.hasNoDragOffset ||
+            if (_dataNotSet || !_dragEnabled || self.hasNoDragOffset ||
                 (self.isFullyZoomedOut && !self.isHighlightPerDragEnabled))
             {
                 return false
@@ -1367,8 +1367,9 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             print("Can't select by touch. No data set.", terminator: "\n")
             return nil
         }
-
-        return _highlighter?.getHighlight(x: Double(pt.x), y: Double(pt.y))
+        //TODO: Check for angle and axis offset
+        let xAjd = max(0, pt.y - (viewPortHandler.contentBottom + 4.0 * 1.5))
+        return _highlighter?.getHighlight(x: Double(pt.x + xAjd), y: Double(pt.y))
     }
 
     /// - returns: the x and y values in the chart at the given touch point

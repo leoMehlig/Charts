@@ -139,7 +139,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         
         var position = CGPoint(x: 0.0, y: 0.0)
         
-        var labelMaxSize = CGSize(width: 0, height: _xAxis.labelHeight)
+        var labelMaxSize = CGSize(width: 0, height: 0)
         
         if (_xAxis.isWordWrapEnabled)
         {
@@ -182,7 +182,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
                     }
                 }
 
-                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Center, attributes: labelAttrs, constrainedToSize: labelMaxSize)
+                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Right, attributes: labelAttrs, constrainedToSize: labelMaxSize)
             }
         }
     }
