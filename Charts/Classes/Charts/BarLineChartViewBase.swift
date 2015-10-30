@@ -448,7 +448,11 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
 
             if (xAxis.isEnabled && xAxis.isDrawLabelsEnabled)
             {
-                let xlabelheight = xAxis.labelHeightWithMargin
+//<<<<<<< HEAD
+//                let xlabelheight = xAxis.labelHeightWithMargin
+//=======
+                let xlabelheight = xAxis.labelRotatedHeight + xAxis.yOffset
+//>>>>>>> danielgindi/master
                 
                 // offsets for x-labels
                 if (xAxis.labelPosition == .Bottom)
@@ -493,7 +497,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         if (!_xAxis.isAxisModulusCustom)
         {
-            _xAxis.axisLabelModulus = Int(ceil((CGFloat(_data.xValCount) * _xAxis.labelWidth) / (_viewPortHandler.contentWidth * _viewPortHandler.touchMatrix.a)))
+            _xAxis.axisLabelModulus = Int(ceil((CGFloat(_data.xValCount) * _xAxis.labelRotatedWidth) / (_viewPortHandler.contentWidth * _viewPortHandler.touchMatrix.a)))
         }
         
         if (_xAxis.axisLabelModulus < 1)
@@ -621,6 +625,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         if (recognizer.state == UIGestureRecognizerState.Ended)
         {
+            if !self.isHighLightPerTapEnabled { return }
+            
             let h = getHighlightByTouchPoint(recognizer.locationInView(self))
             
             if (h === nil || h!.isEqual(self.lastHighlighted))
@@ -761,7 +767,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             stopDeceleration()
             
-            if ((!_dataNotSet && _dragEnabled && !self.hasNoDragOffset) || !self.isFullyZoomedOut)
+            if !_dataNotSet && _dragEnabled &&
+                (!self.hasNoDragOffset || !self.isFullyZoomedOut || self.isHighlightPerDragEnabled)
             {
                 _isDragging = true
                 
@@ -926,8 +933,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         if (gestureRecognizer == _panGestureRecognizer)
         {
-            if (_dataNotSet || !_dragEnabled || self.hasNoDragOffset ||
-                (self.isFullyZoomedOut && !self.isHighlightPerDragEnabled))
+            if _dataNotSet || !_dragEnabled ||
+                (self.hasNoDragOffset && self.isFullyZoomedOut && !self.isHighlightPerDragEnabled)
             {
                 return false
             }

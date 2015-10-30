@@ -36,13 +36,29 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         {
             a += "h"
         }
+
+        let widthText = a as NSString
+//        let labelSize = CGSize(
+//            width: (a as NSString).sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont]).width,
+//            height: _xAxis.labelFont.lineHeight).rotateBy(_xAxis.labelRotation)
         
-        let labelSize = CGSize(
-            width: (a as NSString).sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont]).width,
-            height: _xAxis.labelFont.lineHeight).rotateBy(_xAxis.labelRotation)
+//<<<<<<< HEAD
+//        _xAxis.labelWidth = labelSize.width
+//        _xAxis.labelHeight = labelSize.height
+//=======
+        let labelSize = widthText.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont])
         
-        _xAxis.labelWidth = labelSize.width
-        _xAxis.labelHeight = labelSize.height
+        let labelWidth = labelSize.width
+        let labelHeight = labelSize.height
+        
+        let labelRotatedSize = ChartUtils.sizeOfRotatedRectangle(labelSize, degrees: _xAxis.labelRotationAngle)
+        
+        _xAxis.labelWidth = labelWidth
+        _xAxis.labelHeight = labelHeight
+        _xAxis.labelRotatedWidth = labelRotatedSize.width
+        _xAxis.labelRotatedHeight = labelRotatedSize.height
+        
+//>>>>>>> danielgindi/master
         _xAxis.values = xValues
     }
     
@@ -53,28 +69,28 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
             return
         }
         
-        let yoffset = CGFloat(4.0)
+        let yOffset = _xAxis.yOffset
         
         if (_xAxis.labelPosition == .Top)
         {
-            drawLabels(context: context, pos: viewPortHandler.offsetTop - _xAxis.labelHeight - yoffset)
-        }
-        else if (_xAxis.labelPosition == .Bottom)
-        {
-            drawLabels(context: context, pos: viewPortHandler.contentBottom + yoffset * 1.5)
-        }
-        else if (_xAxis.labelPosition == .BottomInside)
-        {
-            drawLabels(context: context, pos: viewPortHandler.contentBottom - _xAxis.labelHeight - yoffset)
+            drawLabels(context: context, pos: viewPortHandler.contentTop - yOffset, anchor: CGPoint(x: 0.5, y: 1.0))
         }
         else if (_xAxis.labelPosition == .TopInside)
         {
-            drawLabels(context: context, pos: viewPortHandler.offsetTop + yoffset)
+            drawLabels(context: context, pos: viewPortHandler.contentTop + yOffset + _xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5, y: 1.0))
+        }
+        else if (_xAxis.labelPosition == .Bottom)
+        {
+            drawLabels(context: context, pos: viewPortHandler.contentBottom + yOffset, anchor: CGPoint(x: 0.5, y: 0.0))
+        }
+        else if (_xAxis.labelPosition == .BottomInside)
+        {
+            drawLabels(context: context, pos: viewPortHandler.contentBottom - yOffset - _xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5, y: 0.0))
         }
         else
         { // BOTH SIDED
-            drawLabels(context: context, pos: viewPortHandler.offsetTop - _xAxis.labelHeight - yoffset)
-            drawLabels(context: context, pos: viewPortHandler.contentBottom + yoffset * 1.6)
+            drawLabels(context: context, pos: viewPortHandler.contentTop - yOffset, anchor: CGPoint(x: 0.5, y: 1.0))
+            drawLabels(context: context, pos: viewPortHandler.contentBottom + yOffset, anchor: CGPoint(x: 0.5, y: 0.0))
         }
     }
     
@@ -126,7 +142,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
     }
     
     /// draws the x-labels on the specified y-position
-    internal func drawLabels(context context: CGContext, pos: CGFloat)
+    internal func drawLabels(context context: CGContext, pos: CGFloat, anchor: CGPoint)
     {
         let paraStyle = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
         paraStyle.alignment = .Center
@@ -134,6 +150,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         let labelAttrs = [NSFontAttributeName: _xAxis.labelFont,
             NSForegroundColorAttributeName: _xAxis.labelTextColor,
             NSParagraphStyleAttributeName: paraStyle]
+        let labelRotationAngleRadians = _xAxis.labelRotationAngle * ChartUtils.Math.FDEG2RAD
         
         let valueToPixelMatrix = transformer.valueToPixelMatrix
         
@@ -181,16 +198,25 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
                         position.x += width / 2.0
                     }
                 }
-
-                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Right, attributes: labelAttrs, constrainedToSize: labelMaxSize)
+//<<<<<<< HEAD
+//
+//                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Right, attributes: labelAttrs, constrainedToSize: labelMaxSize)
+//=======
+                
+                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, attributes: labelAttrs, constrainedToSize: labelMaxSize, anchor: anchor, angleRadians: labelRotationAngleRadians)
+//>>>>>>> danielgindi/master
             }
         }
     }
     
-    internal func drawLabel(context context: CGContext, label: String, xIndex: Int, x: CGFloat, y: CGFloat, align: NSTextAlignment, attributes: [String: NSObject], constrainedToSize: CGSize)
+    internal func drawLabel(context context: CGContext, label: String, xIndex: Int, x: CGFloat, y: CGFloat, attributes: [String: NSObject], constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
     {
         let formattedLabel = _xAxis.valueFormatter?.stringForXValue(xIndex, original: label, viewPortHandler: viewPortHandler) ?? label
-        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), angle: _xAxis.labelRotation, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
+//<<<<<<< HEAD
+//        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), angle: _xAxis.labelRotation, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
+//=======
+        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), attributes: attributes, constrainedToSize: constrainedToSize, anchor: anchor, angleRadians: angleRadians)
+//>>>>>>> danielgindi/master
     }
     
     private var _gridLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
