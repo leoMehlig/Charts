@@ -35,11 +35,6 @@ public class ChartXAxis: ChartAxisBase
     /// height of the x-axis labels in pixels - this is automatically calculated by the computeAxis() methods in the renderers
     public var labelHeight = CGFloat(1.0)
     
-//<<<<<<< HEAD
-//    internal var labelHeightWithMargin: CGFloat {
-//        return labelHeight * (labelRotation == 0 || labelRotation == CGFloat(M_PI) ? 2 : 1)
-//    }
-//=======
     /// width of the (rotated) x-axis labels in pixels - this is automatically calculated by the computeAxis() methods in the renderers
     public var labelRotatedWidth = CGFloat(1.0)
     
@@ -48,7 +43,6 @@ public class ChartXAxis: ChartAxisBase
     
     /// This is the angle for drawing the X axis labels (in degrees)
     public var labelRotationAngle = CGFloat(0.0)
-//>>>>>>> danielgindi/master
     
     /// the space that should be left out (in characters) between the x-axis labels
     /// This only applies if the number of labels that will be skipped in between drawn axis labels is not custom set.
@@ -56,38 +50,8 @@ public class ChartXAxis: ChartAxisBase
     /// **default**: 4
     public var spaceBetweenLabels = Int(4)
     
-    /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when (index % modulus) == 0.
-    public var axisLabelModulus = Int(1) {
-        didSet {
-            updateAxisLabelModulus()
-        }
-    }
-    
-    /// the modulus that makes sure that certain indexes are drawn, unless there are too many.
-    public var requiredAxisLabelModulus: Int? {
-        didSet {
-            updateAxisLabelModulus()
-        }
-    }
-    
-    //changes the axisLabelModulus to an higher value that matches the requiredAxisLabelModulus
-    private func updateAxisLabelModulus() {
-        if let reqModulus = requiredAxisLabelModulus {
-            if reqModulus % axisLabelModulus != 0 && axisLabelModulus % reqModulus != 0{
-                if reqModulus > axisLabelModulus {
-                    var newModulus = reqModulus
-                    for var i = 2; i < reqModulus && reqModulus % reqModulus / i == 0; i *= 2 {
-                        if reqModulus / i >= axisLabelModulus {
-                            newModulus = reqModulus / i
-                        }
-                    }
-                    axisLabelModulus = newModulus
-                } else {
-                    axisLabelModulus = (axisLabelModulus / reqModulus + 1) * reqModulus
-                }
-            }
-        }
-    }
+    /// the modulus that indicates if a value at a specified index in an array(list) for the x-axis-labels is drawn or not. Draw when `(index % modulus) == 0`.
+    public var axisLabelModulus = Int(1)
     
     /// Is axisLabelModulus a custom value or auto calculated? If false, then it's auto, if true, then custom.
     /// 
@@ -117,9 +81,6 @@ public class ChartXAxis: ChartAxisBase
             _xAxisValueFormatter = newValue ?? ChartDefaultXAxisValueFormatter()
         }
     }
-    
-    /// the rotation of the labels in radians
-    public var labelRotation: CGFloat = 0.0
     
     /// the position of the x-labels relative to the chart
     public var labelPosition = XAxisLabelPosition.Top

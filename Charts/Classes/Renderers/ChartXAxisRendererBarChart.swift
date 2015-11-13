@@ -49,7 +49,7 @@ public class ChartXAxisRendererBarChart: ChartXAxisRenderer
         
         var position = CGPoint(x: 0.0, y: 0.0)
         
-        var labelMaxSize = CGSize(width: 0, height: 0)
+        var labelMaxSize = CGSize()
         
         if (_xAxis.isWordWrapEnabled)
         {
@@ -100,12 +100,7 @@ public class ChartXAxisRendererBarChart: ChartXAxisRenderer
                     }
                 }
                 
-//<<<<<<< HEAD
-//                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Right
-//                    , attributes: labelAttrs, constrainedToSize: labelMaxSize)
-//=======
                 drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, attributes: labelAttrs, constrainedToSize: labelMaxSize, anchor: anchor, angleRadians: labelRotationAngleRadians)
-//>>>>>>> danielgindi/master
             }
         }
     }

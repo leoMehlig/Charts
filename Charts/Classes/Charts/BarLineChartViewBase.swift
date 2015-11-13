@@ -448,11 +448,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
 
             if (xAxis.isEnabled && xAxis.isDrawLabelsEnabled)
             {
-//<<<<<<< HEAD
-//                let xlabelheight = xAxis.labelHeightWithMargin
-//=======
                 let xlabelheight = xAxis.labelRotatedHeight + xAxis.yOffset
-//>>>>>>> danielgindi/master
                 
                 // offsets for x-labels
                 if (xAxis.labelPosition == .Bottom)
@@ -767,15 +763,23 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             stopDeceleration()
             
-            if !_dataNotSet && _dragEnabled &&
-                (!self.hasNoDragOffset || !self.isFullyZoomedOut || self.isHighlightPerDragEnabled)
+            if _dataNotSet
+            { // If we have no data, we have nothing to pan and no data to highlight
+                return;
+            }
+            
+            // If drag is enabled and we are in a position where there's something to drag:
+            //  * If we're zoomed in, then obviously we have something to drag.
+            //  * If we have a drag offset - we always have something to drag
+            if self.isDragEnabled &&
+                (!self.hasNoDragOffset || !self.isFullyZoomedOut)
             {
                 _isDragging = true
                 
                 _closestDataSetToTouch = getDataSetByTouchPoint(recognizer.locationOfTouch(0, inView: self))
                 
                 let translation = recognizer.translationInView(self)
-                let didUserDrag = (self is HorizontalBarChartView) ? translation.y != 0.0 : translation.x != 0.0 
+                let didUserDrag = (self is HorizontalBarChartView) ? translation.y != 0.0 : translation.x != 0.0
                 
                 // Check to see if user dragged at all and if so, can the chart be dragged by the given amount
                 if (didUserDrag && !performPanChange(translation: translation))
@@ -797,6 +801,12 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
                 }
                 
                 _lastPanPoint = recognizer.translationInView(self)
+            }
+            else if self.isHighlightPerDragEnabled
+            {
+                // We will only handle highlights on UIGestureRecognizerState.Changed
+                
+                _isDragging = false
             }
         }
         else if (recognizer.state == UIGestureRecognizerState.Changed)
@@ -977,6 +987,14 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             {
                 scrollView = scrollView?.superview
             }
+            
+            // If there is two scrollview together, we pick the superview of the inner scrollview.
+            // In the case of UITableViewWrepperView, the superview will be UITableView
+            if let superViewOfScrollView = scrollView?.superview where superViewOfScrollView.isKindOfClass(UIScrollView)
+            {
+                scrollView = superViewOfScrollView
+            }
+
             var foundScrollView = scrollView as? UIScrollView
             
             if (foundScrollView !== nil && !foundScrollView!.scrollEnabled)
@@ -1374,9 +1392,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             print("Can't select by touch. No data set.", terminator: "\n")
             return nil
         }
-        //TODO: Check for angle and axis offset
-        let xAjd = max(0, pt.y - (viewPortHandler.contentBottom + 4.0 * 1.5))
-        return _highlighter?.getHighlight(x: Double(pt.x + xAjd), y: Double(pt.y))
+
+        return _highlighter?.getHighlight(x: Double(pt.x), y: Double(pt.y))
     }
 
     /// - returns: the x and y values in the chart at the given touch point

@@ -64,7 +64,7 @@ public class ChartUtils
             return number + DBL_EPSILON
         }
     }
-    
+
     /// - returns: the index of the DataSet that contains the closest value on the y-axis. This will return -Integer.MAX_VALUE if failure.
     internal class func closestDataSetIndex(valsAtIndex: [ChartSelectionDetail], value: Double, axis: ChartYAxis.AxisDependency?) -> Int
     {
@@ -138,21 +138,9 @@ public class ChartUtils
         UIGraphicsPopContext()
     }
     
-//<<<<<<< HEAD
-//    internal class func drawMultilineText(context context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, angle: CGFloat = 0.0, align: NSTextAlignment, attributes: [String : AnyObject]?, constrainedToSize: CGSize)
-//    {
-//        
-//        var rect = CGRect(origin: CGPoint(), size: knownTextSize)
-//        rect.origin.x += point.x
-//        rect.origin.y += point.y
-//        if constrainedToSize.height > rect.height {
-//            rect.origin.y += (constrainedToSize.height - rect.height) / 2
-//        }
-//=======
     public class func drawText(context context: CGContext, text: String, point: CGPoint, attributes: [String : AnyObject]?, anchor: CGPoint, angleRadians: CGFloat)
     {
         var drawOffset = CGPoint()
-//>>>>>>> danielgindi/master
         
         UIGraphicsPushContext(context)
         
@@ -206,27 +194,48 @@ public class ChartUtils
     {
         var rect = CGRect(origin: CGPoint(), size: knownTextSize)
         
-        rect.origin.x += point.x
-        rect.origin.y += point.y
-        if constrainedToSize.height > rect.height {
-            rect.origin.y += (constrainedToSize.height - rect.height) / 2
-        }
-
-            rect.origin.x -= rect.size.width
-
         UIGraphicsPushContext(context)
-        CGContextSaveGState(context)
-        defer {
+        
+        if angleRadians != 0.0
+        {
+            // Move the text drawing rect in a way that it always rotates around its center
+            rect.origin.x = -knownTextSize.width * 0.5
+            rect.origin.y = -knownTextSize.height * 0.5
+            
+            var translate = point
+            
+            // Move the "outer" rect relative to the anchor, assuming its centered
+            if anchor.x != 0.5 || anchor.y != 0.5
+            {
+                let rotatedSize = sizeOfRotatedRectangle(knownTextSize, radians: angleRadians)
+                
+                translate.x -= rotatedSize.width * (anchor.x - 0.5)
+                translate.y -= rotatedSize.height * (anchor.y - 0.5)
+            }
+            
+            CGContextSaveGState(context)
+            CGContextTranslateCTM(context, translate.x, translate.y)
+            CGContextRotateCTM(context, angleRadians)
+            
+            (text as NSString).drawWithRect(rect, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
+            
             CGContextRestoreGState(context)
-            UIGraphicsPopContext()
         }
-        if angleRadians != 0.0 {
-            let t = CGAffineTransformMakeTranslation(rect.origin.x + rect.width, rect.origin.y + rect.height / 2)
-            CGContextConcatCTM(context, t)
-            CGContextConcatCTM(context, CGAffineTransformMakeRotation(angleRadians))
-            CGContextConcatCTM(context, CGAffineTransformInvert(t))
+        else
+        {
+            if anchor.x != 0.0 || anchor.y != 0.0
+            {
+                rect.origin.x = -knownTextSize.width * anchor.x
+                rect.origin.y = -knownTextSize.height * anchor.y
+            }
+            
+            rect.origin.x += point.x
+            rect.origin.y += point.y
+            
+            (text as NSString).drawWithRect(rect, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
         }
-        (text as NSString).drawWithRect(rect, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
+        
+        UIGraphicsPopContext()
     }
     
     internal class func drawMultilineText(context context: CGContext, text: String, point: CGPoint, attributes: [String : AnyObject]?, constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
@@ -234,7 +243,6 @@ public class ChartUtils
         let rect = text.boundingRectWithSize(constrainedToSize, options: .UsesLineFragmentOrigin, attributes: attributes, context: nil)
         drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, attributes: attributes, constrainedToSize: constrainedToSize, anchor: anchor, angleRadians: angleRadians)
     }
-    
     
     /// - returns: an angle between 0.0 < 360.0 (not less than zero, less than 360)
     internal class func normalizedAngleFromAngle(var angle: CGFloat) -> CGFloat
@@ -246,7 +254,6 @@ public class ChartUtils
         
         return angle % 360.0
     }
-    
     
     private class func generateDefaultValueFormatter() -> NSNumberFormatter
     {
@@ -343,11 +350,5 @@ public class ChartUtils
             newArray.append(object as? String)
         }
         return newArray
-    }
-}
-
-extension CGSize {
-    func rotateBy(angle: CGFloat) -> CGSize {
-        return CGRectApplyAffineTransform(CGRect(origin: CGPointZero, size: self), CGAffineTransformMakeRotation(angle)).size
     }
 }

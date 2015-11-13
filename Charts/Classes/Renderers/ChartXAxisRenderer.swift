@@ -36,16 +36,9 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         {
             a += "h"
         }
-
-        let widthText = a as NSString
-//        let labelSize = CGSize(
-//            width: (a as NSString).sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont]).width,
-//            height: _xAxis.labelFont.lineHeight).rotateBy(_xAxis.labelRotation)
         
-//<<<<<<< HEAD
-//        _xAxis.labelWidth = labelSize.width
-//        _xAxis.labelHeight = labelSize.height
-//=======
+        let widthText = a as NSString
+        
         let labelSize = widthText.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont])
         
         let labelWidth = labelSize.width
@@ -58,7 +51,6 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         _xAxis.labelRotatedWidth = labelRotatedSize.width
         _xAxis.labelRotatedHeight = labelRotatedSize.height
         
-//>>>>>>> danielgindi/master
         _xAxis.values = xValues
     }
     
@@ -156,7 +148,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         
         var position = CGPoint(x: 0.0, y: 0.0)
         
-        var labelMaxSize = CGSize(width: 0, height: 0)
+        var labelMaxSize = CGSize()
         
         if (_xAxis.isWordWrapEnabled)
         {
@@ -198,13 +190,8 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
                         position.x += width / 2.0
                     }
                 }
-//<<<<<<< HEAD
-//
-//                drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, align: .Right, attributes: labelAttrs, constrainedToSize: labelMaxSize)
-//=======
                 
                 drawLabel(context: context, label: label!, xIndex: i, x: position.x, y: pos, attributes: labelAttrs, constrainedToSize: labelMaxSize, anchor: anchor, angleRadians: labelRotationAngleRadians)
-//>>>>>>> danielgindi/master
             }
         }
     }
@@ -212,11 +199,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
     internal func drawLabel(context context: CGContext, label: String, xIndex: Int, x: CGFloat, y: CGFloat, attributes: [String: NSObject], constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
     {
         let formattedLabel = _xAxis.valueFormatter?.stringForXValue(xIndex, original: label, viewPortHandler: viewPortHandler) ?? label
-//<<<<<<< HEAD
-//        ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), angle: _xAxis.labelRotation, align: align, attributes: attributes, constrainedToSize: constrainedToSize)
-//=======
         ChartUtils.drawMultilineText(context: context, text: formattedLabel, point: CGPoint(x: x, y: y), attributes: attributes, constrainedToSize: constrainedToSize, anchor: anchor, angleRadians: angleRadians)
-//>>>>>>> danielgindi/master
     }
     
     private var _gridLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
@@ -229,7 +212,12 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         }
         
         CGContextSaveGState(context)
-        
+
+        if (!_xAxis.gridAntialiasEnabled)
+        {
+            CGContextSetShouldAntialias(context, false)
+        }
+
         CGContextSetStrokeColorWithColor(context, _xAxis.gridColor.CGColor)
         CGContextSetLineWidth(context, _xAxis.gridLineWidth)
         if (_xAxis.gridLineDashLengths != nil)
