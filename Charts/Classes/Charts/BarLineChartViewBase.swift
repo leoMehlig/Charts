@@ -1392,10 +1392,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             print("Can't select by touch. No data set.", terminator: "\n")
             return nil
         }
-        if _xAxis.labelPosition == .Bottom && _xAxis.labelRotationAngle == -45 {
-            let xAjd = max(0, pt.y - (viewPortHandler.contentBottom + _xAxis.yOffset))
-            return _highlighter?.getHighlight(x: Double(pt.x + xAjd), y: Double(pt.y))
-        }
         
         return _highlighter?.getHighlight(x: Double(pt.x), y: Double(pt.y))
         
@@ -1508,6 +1504,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             return _xAxis
     }
     
+
     /// flag that indicates if pinch-zoom is enabled. if true, both x and y axis can be scaled simultaneously with 2 fingers, if false, x and y axis can be scaled separately
     public var pinchZoomEnabled: Bool
         {
