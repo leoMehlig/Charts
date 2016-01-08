@@ -56,7 +56,7 @@ public class CombinedChartData: BarLineScatterCandleBubbleChartData
             calcYValueSum()
             calcYValueCount()
             
-            calcXValAverageLength()
+            calcXValAverageAndMaxLength()
         }
     }
     
@@ -80,7 +80,7 @@ public class CombinedChartData: BarLineScatterCandleBubbleChartData
             calcYValueSum()
             calcYValueCount()
             
-            calcXValAverageLength()
+            calcXValAverageAndMaxLength()
         }
     }
     
@@ -104,7 +104,7 @@ public class CombinedChartData: BarLineScatterCandleBubbleChartData
             calcYValueSum()
             calcYValueCount()
         
-            calcXValAverageLength()
+            calcXValAverageAndMaxLength()
         }
     }
     
@@ -128,7 +128,7 @@ public class CombinedChartData: BarLineScatterCandleBubbleChartData
             calcYValueSum()
             calcYValueCount()
             
-            calcXValAverageLength()
+            calcXValAverageAndMaxLength()
         }
     }
     
@@ -152,7 +152,7 @@ public class CombinedChartData: BarLineScatterCandleBubbleChartData
             calcYValueSum()
             calcYValueCount()
             
-            calcXValAverageLength()
+            calcXValAverageAndMaxLength()
         }
     }
     

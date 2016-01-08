@@ -35,6 +35,8 @@ public class ChartData: NSObject
     /// the average length (in characters) across all x-value strings
     private var _xValAverageLength = Double(0.0)
     
+    private var _xValMaxLength = 0
+    
     internal var _xVals: [String?]!
     internal var _dataSets: [ChartDataSet]!
     
@@ -94,11 +96,11 @@ public class ChartData: NSObject
         calcYValueSum()
         calcYValueCount()
         
-        calcXValAverageLength()
+        calcXValAverageAndMaxLength()
     }
     
     // calculates the average length (in characters) across all x-value strings
-    internal func calcXValAverageLength()
+    internal func calcXValAverageAndMaxLength()
     {
         if (_xVals.count == 0)
         {
@@ -114,6 +116,7 @@ public class ChartData: NSObject
         }
         
         _xValAverageLength = Double(sum) / Double(_xVals.count)
+        _xValMaxLength = _xVals.reduce(01, combine: { max($0, $1?.characters.count ?? 0) })
     }
     
     // Checks if the combination of x-values array and DataSet array is legal or not.
@@ -340,6 +343,11 @@ public class ChartData: NSObject
     public var xValAverageLength: Double
     {
         return _xValAverageLength
+    }
+    
+    public var xValMaxLength: Int
+    {
+        return _xValMaxLength
     }
     
     /// - returns: the total y-value sum across all DataSet objects the this object represents.

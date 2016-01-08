@@ -280,7 +280,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _leftYAxisRenderer?.computeAxis(yMin: _leftAxis.axisMinimum, yMax: _leftAxis.axisMaximum)
         _rightYAxisRenderer?.computeAxis(yMin: _rightAxis.axisMinimum, yMax: _rightAxis.axisMaximum)
         
-        _xAxisRenderer?.computeAxis(xValAverageLength: _data.xValAverageLength, xValues: _data.xVals)
+        _xAxisRenderer?.computeAxis(xValAverageLength: _data.xValAverageLength, xValMaxLength:  _data.xValMaxLength, xValues: _data.xVals)
         
         if (_legend !== nil)
         {

@@ -148,7 +148,7 @@ public class RadarChartView: PieRadarChartViewBase
         _yAxis?._defaultValueFormatter = _defaultValueFormatter
         
         _yAxisRenderer?.computeAxis(yMin: _yAxis.axisMinimum, yMax: _yAxis.axisMaximum)
-        _xAxisRenderer?.computeAxis(xValAverageLength: _data.xValAverageLength, xValues: _data.xVals)
+        _xAxisRenderer?.computeAxis(xValAverageLength: _data.xValAverageLength, xValMaxLength: _data.xValMaxLength, xValues: _data.xVals)
         
         if (_legend !== nil && !_legend.isLegendCustom)
         {

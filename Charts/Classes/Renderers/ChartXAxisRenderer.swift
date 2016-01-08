@@ -26,7 +26,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         _xAxis = xAxis
     }
     
-    public func computeAxis(xValAverageLength xValAverageLength: Double, xValues: [String?])
+    public func computeAxis(xValAverageLength xValAverageLength: Double, xValMaxLength: Int, xValues: [String?])
     {
         var a = ""
         
@@ -44,12 +44,15 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         let labelWidth = labelSize.width
         let labelHeight = labelSize.height
         
-        let labelRotatedSize = ChartUtils.sizeOfRotatedRectangle(labelSize, degrees: _xAxis.labelRotationAngle)
+        let maxLengthString = (0..<xValMaxLength).reduce("", combine: { $0.0 + "h" }) as NSString
+        
+        let maxSize = maxLengthString.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont])
+        
         
         _xAxis.labelWidth = labelWidth
         _xAxis.labelHeight = labelHeight
-        _xAxis.labelRotatedWidth = labelRotatedSize.width
-        _xAxis.labelRotatedHeight = labelRotatedSize.height
+        _xAxis.labelRotatedWidth = ChartUtils.sizeOfRotatedRectangle(labelSize, degrees: _xAxis.labelRotationAngle).width
+        _xAxis.labelRotatedHeight = ChartUtils.sizeOfRotatedRectangle(maxSize, degrees: _xAxis.labelRotationAngle).height
         
         _xAxis.values = xValues
     }
