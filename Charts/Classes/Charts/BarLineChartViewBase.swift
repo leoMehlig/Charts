@@ -259,6 +259,12 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _leftAxisTransformer.prepareMatrixOffset(_leftAxis.isInverted)
     }
     
+    public func updateData(data: ChartData) {
+        let oldDeltaX = self._deltaX
+        self.data = data
+        zoom(self._deltaX / oldDeltaX, scaleY: 1, x: 0, y: 0)
+    }
+    
     public override func notifyDataSetChanged()
     {
         if _data === nil
