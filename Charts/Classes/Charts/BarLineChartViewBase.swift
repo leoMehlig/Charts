@@ -1074,6 +1074,18 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         setNeedsDisplay()
     }
     
+    public func zoomToXRange(xIndex: Int, length: Int) {
+            var matrix = _viewPortHandler.touchMatrix
+            matrix.a = _deltaX / CGFloat(length)
+            _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
+            
+            var pt = CGPoint(x: CGFloat(xIndex), y: 0.0)
+            
+            getTransformer(.Left).pointValueToPixel(&pt)
+                        pt.y = _viewPortHandler.offsetTop
+            _viewPortHandler.centerViewPort(pt: pt, chart: self)
+    }
+    
     /// Resets all zooming and dragging and makes the chart fit exactly it's bounds.
     public func fitScreen()
     {
@@ -1128,6 +1140,9 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _viewPortHandler.setMinimumScaleY(yScale)
     }
     
+
+    
+   
     /// Moves the left side of the current viewport to the specified x-index.
     /// This also refreshes the chart by calling setNeedsDisplay().
     public func moveViewToX(xIndex: Int)
@@ -1711,12 +1726,16 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         return getAxis(axis).isInverted
     }
     
+    public var startIndex: Int = 0
+    
+    public var endIndex: Int = Int.max
+    
     /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
     public var lowestVisibleXIndex: Int
         {
             var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (pt.x <= 0.0) ? 0 : Int(pt.x + 1.0)
+            return max((pt.x <= 0.0) ? 0 : Int(pt.x + 1.0), self.startIndex)
     }
     
     /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
@@ -1724,7 +1743,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x)
+            return min((_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x), self.endIndex)
     }
 }
 

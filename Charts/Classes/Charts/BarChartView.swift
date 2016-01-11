@@ -22,7 +22,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, all values are drawn above their bars, instead of below their top
     private var _drawValueAboveBarEnabled = true
-
+    
     /// if set to true, a grey area is darawn behind each bar that indicates the maximum value
     private var _drawBarShadowEnabled = false
     
@@ -102,32 +102,32 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     }
     
     public override var lowestVisibleXIndex: Int
-    {
-        let step = CGFloat(_data.dataSetCount)
-        let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
-        
-        var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
-        getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
-        
-        return Int((pt.x <= CGFloat(chartXMin)) ? 0.0 : (pt.x / div) + 1.0)
+        {
+            let step = CGFloat(_data.dataSetCount)
+            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+            
+            var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
+            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+            
+            return Int((pt.x <= CGFloat(chartXMin)) ? 0.0 : (pt.x / div) + 1.0)
     }
-
+    
     public override var highestVisibleXIndex: Int
-    {
-        let step = CGFloat(_data.dataSetCount)
-        let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
-        
-        var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
-        getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
-        
-        return Int((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
+        {
+            let step = CGFloat(_data.dataSetCount)
+            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+            
+            var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
+            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+            
+            return Int((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
     }
-
+    
     // MARK: Accessors
     
     /// flag that enables or disables the highlighting arrow
     public var drawHighlightArrowEnabled: Bool
-    {
+        {
         get { return _drawHighlightArrowEnabled; }
         set
         {
@@ -138,7 +138,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, all values are drawn above their bars, instead of below their top
     public var drawValueAboveBarEnabled: Bool
-    {
+        {
         get { return _drawValueAboveBarEnabled; }
         set
         {
@@ -149,7 +149,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
     public var drawBarShadowEnabled: Bool
-    {
+        {
         get { return _drawBarShadowEnabled; }
         set
         {
@@ -157,6 +157,25 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
             setNeedsDisplay()
         }
     }
+    
+    public override func zoomToXRange(xIndex: Int, length: Int) {
+        if let d = barData {
+            
+            var matrix = _viewPortHandler.touchMatrix
+            matrix.a = _deltaX / (CGFloat(length * d.dataSetCount) + d.groupSpace * CGFloat(length))
+            _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
+            
+            let space = ((d.dataSets.first as? BarChartDataSet)?.barSpace ?? 0)  / 2
+            var pt = CGPoint(x: CGFloat(xIndex * d.dataSetCount) + 1 + space, y: 0.0)
+            
+            getTransformer(.Left).pointValueToPixel(&pt)
+            
+            pt.x += 2
+            pt.y = _viewPortHandler.offsetTop
+            _viewPortHandler.centerViewPort(pt: pt, chart: self)
+        }
+    }
+    
     
     // MARK: - BarChartDataProbider
     
