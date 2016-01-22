@@ -130,6 +130,24 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         #endif
     }
     
+    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        /// In the superclass this methode recalculates and redraws the chart after a size change
+        /// To preserve the x-position of the chart we convert the current origin into "point values"
+        /// After the recalucation we convert the point values back to the pixels (using the new generater transformer) and move the chart to this position
+        
+        var oldPoint: CGPoint?
+        if keyPath == "frame" || keyPath == "bounds" {
+            oldPoint = viewPortHandler.contentRect.origin
+            getTransformer(.Left).pixelToValue(&oldPoint!)
+        }
+        super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+        if var p = oldPoint {
+            getTransformer(.Left).pointValueToPixel(&p)
+            viewPortHandler.centerViewPort(pt: p, chart: self)
+        }
+        
+    }
+    
     public override func drawRect(rect: CGRect)
     {
         super.drawRect(rect)
@@ -1075,15 +1093,15 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     }
     
     public func zoomToXRange(xIndex: Int, length: Int) {
-            var matrix = _viewPortHandler.touchMatrix
-            matrix.a = _deltaX / CGFloat(length)
-            _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
-            
-            var pt = CGPoint(x: CGFloat(xIndex), y: 0.0)
-            
-            getTransformer(.Left).pointValueToPixel(&pt)
-                        pt.y = _viewPortHandler.offsetTop
-            _viewPortHandler.centerViewPort(pt: pt, chart: self)
+        var matrix = _viewPortHandler.touchMatrix
+        matrix.a = _deltaX / CGFloat(length)
+        _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
+        
+        var pt = CGPoint(x: CGFloat(xIndex), y: 0.0)
+        
+        getTransformer(.Left).pointValueToPixel(&pt)
+        pt.y = _viewPortHandler.offsetTop
+        _viewPortHandler.centerViewPort(pt: pt, chart: self)
     }
     
     /// Resets all zooming and dragging and makes the chart fit exactly it's bounds.
