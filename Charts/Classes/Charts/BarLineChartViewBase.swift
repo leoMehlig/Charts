@@ -260,23 +260,13 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     }
     
     public func updateData(data: ChartData) {
+        let oldDeltaX = self._deltaX
         self.data = data
-        zoom(self._deltaX / _oldDeltaX, scaleY: 1, x: 0, y: 0)
+        zoom(self._deltaX / oldDeltaX, scaleY: 1, x: 0, y: 0)
     }
-    
-    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
-        if (keyPath == "bounds" || keyPath == "frame") {
-            zoom(self._deltaX / _oldDeltaX, scaleY: 1, x: 0, y: 0)
-        }
- 
-    }
-    private var _oldDeltaX: CGFloat = 0.0
     
     public override func notifyDataSetChanged()
     {
-        _oldDeltaX = self._deltaX
-        
         if _data === nil
         {
             return
@@ -1740,12 +1730,12 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     
     public var endIndex: Int = Int.max
     
-    /// - returns: the lowest x-index (value on the x-axis) that is still visible on the chart.
+    /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
     public var lowestVisibleXIndex: Int
         {
             var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (pt.x <= 0.0) ? 0 : Int(pt.x + 1.0)
+            return max((pt.x <= 0.0) ? 0 : Int(pt.x + 1.0), self.startIndex)
     }
     
     /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
@@ -1753,7 +1743,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x)
+            return min((_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x), self.endIndex)
     }
 }
 

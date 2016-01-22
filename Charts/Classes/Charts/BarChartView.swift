@@ -159,20 +159,20 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     }
     
     public override func zoomToXRange(xIndex: Int, length: Int) {
-        if let d = self.barData {
+        if let d = barData {
             
-            var matrix = self._viewPortHandler.touchMatrix
-            matrix.a = self._deltaX / (CGFloat(length * d.dataSetCount) + d.groupSpace * CGFloat(length))
-            self._viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
+            var matrix = _viewPortHandler.touchMatrix
+            matrix.a = _deltaX / (CGFloat(length * d.dataSetCount) + d.groupSpace * CGFloat(length))
+            _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
             
             let space = ((d.dataSets.first as? BarChartDataSet)?.barSpace ?? 0)  / 2
             var pt = CGPoint(x: CGFloat(xIndex * d.dataSetCount) + 1 + space, y: 0.0)
             
-            self.getTransformer(.Left).pointValueToPixel(&pt)
+            getTransformer(.Left).pointValueToPixel(&pt)
             
             pt.x += 2
-            pt.y = self._viewPortHandler.offsetTop
-            self._viewPortHandler.centerViewPort(pt: pt, chart: self)
+            pt.y = _viewPortHandler.offsetTop
+            _viewPortHandler.centerViewPort(pt: pt, chart: self)
         }
     }
     

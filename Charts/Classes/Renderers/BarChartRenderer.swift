@@ -67,9 +67,6 @@ public class BarChartRenderer: ChartDataRendererBase
         // do the drawing
         for (var j = 0, count = Int(ceil(CGFloat(dataSet.entryCount) * _animator.phaseX)); j < count; j++)
         {
-            
-            guard j >= self._boundMinX && j < self._boundMaxX else { continue }
-            
             let e = entries[j]
             
             // calculate the x-position, depending on datasetcount
@@ -307,9 +304,6 @@ public class BarChartRenderer: ChartDataRendererBase
                 {
                     for (var j = 0, count = Int(ceil(CGFloat(valuePoints.count) * _animator.phaseX)); j < count; j++)
                     {
-                        guard j >= self._boundMinX && j < self._boundMaxX else { continue }
-
-                        
                         if (!viewPortHandler.isInBoundsRight(valuePoints[j].x))
                         {
                             break
@@ -338,8 +332,6 @@ public class BarChartRenderer: ChartDataRendererBase
                     
                     for (var j = 0, count = Int(ceil(CGFloat(valuePoints.count) * _animator.phaseX)); j < count; j++)
                     {
-                        guard j >= self._boundMinX && j < self._boundMaxX else { continue }
-
                         let e = entries[j]
                         
                         let values = e.values
