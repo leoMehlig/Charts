@@ -123,6 +123,29 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
             return Int((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
     }
     
+    
+    public override var lowestVisibleX: Double
+        {
+            let step = CGFloat(_data.dataSetCount)
+            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+            let barSpace = (_data.dataSets.first as? BarChartDataSet)?.barSpace ?? 0
+            
+            var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
+            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+            
+            return Double((pt.x <= CGFloat(chartXMin)) ? 0.0 : pt.x / div + barSpace)
+    }
+    
+    public override var highestVisibleX: Double
+        {
+            let step = CGFloat(_data.dataSetCount)
+            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+            
+            var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
+            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+            
+            return Double((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
+    }
     // MARK: Accessors
     
     /// flag that enables or disables the highlighting arrow

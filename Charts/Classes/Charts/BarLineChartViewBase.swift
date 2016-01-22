@@ -1763,6 +1763,22 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             getTransformer(.Left).pixelToValue(&pt)
             return (_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x)
     }
+    
+    /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
+    public var lowestVisibleX: Double
+        {
+            var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
+            getTransformer(.Left).pixelToValue(&pt)
+            return (pt.x <= 0.0) ? 0 : Double(pt.x + 1.0)
+    }
+    
+    /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
+    public var highestVisibleX: Double
+        {
+            var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
+            getTransformer(.Left).pixelToValue(&pt)
+            return (_data != nil && Int(pt.x) >= _data.xValCount) ? Double(_data.xValCount - 1) : Double(pt.x)
+    }
 }
 
 /// Default formatter that calculates the position of the filled line.
