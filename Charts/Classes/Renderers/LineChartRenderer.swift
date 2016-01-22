@@ -96,12 +96,13 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
     {
         let trans = dataProvider?.getTransformer(dataSet.axisDependency)
         
-        let entryFrom = dataSet.entryForXIndex(_minX)!
-        let entryTo = dataSet.entryForXIndex(_maxX)!
+        let entryFrom = dataSet.entryForXIndex(max(_boundMinX, _minX))!
+        let entryTo = dataSet.entryForXIndex(min(_boundMaxX - 1, _maxX))!
+        let count = min(entries.count, _boundMaxX)
         
         let diff = (entryFrom == entryTo) ? 1 : 0
         let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), count)
         
         let phaseX = _animator.phaseX
         let phaseY = _animator.phaseY
@@ -139,15 +140,17 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             curDx = CGFloat(next.xIndex - cur.xIndex) * intensity
             curDy = CGFloat(next.value - cur.value) * intensity
             
-            // the first cubic
-            CGPathAddCurveToPoint(cubicPath, &valueToPixelMatrix,
-                CGFloat(prev.xIndex) + prevDx, (CGFloat(prev.value) + prevDy) * phaseY,
-                CGFloat(cur.xIndex) - curDx, (CGFloat(cur.value) - curDy) * phaseY,
-                CGFloat(cur.xIndex), CGFloat(cur.value) * phaseY)
+            if (minx > _boundMinX) {
+                // the first cubic
+                CGPathAddCurveToPoint(cubicPath, &valueToPixelMatrix,
+                    CGFloat(prev.xIndex) + prevDx, (CGFloat(prev.value) + prevDy) * phaseY,
+                    CGFloat(cur.xIndex) - curDx, (CGFloat(cur.value) - curDy) * phaseY,
+                    CGFloat(cur.xIndex), CGFloat(cur.value) * phaseY)
+            }
             
-            for (var j = minx + 1, count = min(size, entries.count - 1); j < count; j++)
+            for (var j = minx + 1, count = min(size, count - 1); j < count; j++)
             {
-                prevPrev = entries[j == 1 ? 0 : j - 2]
+                prevPrev = entries[j == _boundMinX + 1 ? _boundMinX : j - 2]
                 prev = entries[j - 1]
                 cur = entries[j]
                 next = entries[j + 1]
@@ -162,11 +165,11 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
                     (CGFloat(cur.value) - curDy) * phaseY, CGFloat(cur.xIndex), CGFloat(cur.value) * phaseY)
             }
             
-            if (size > entries.count - 1)
+            if (size > count - 1)
             {
-                prevPrev = entries[entries.count - (entries.count >= 3 ? 3 : 2)]
-                prev = entries[entries.count - 2]
-                cur = entries[entries.count - 1]
+                prevPrev = entries[count - (count >= 3 ? 3 : 2)]
+                prev = entries[count - 2]
+                cur = entries[count - 1]
                 next = cur
                 
                 prevDx = CGFloat(cur.xIndex - prevPrev.xIndex) * intensity
@@ -418,12 +421,12 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
                 
                 var entries = dataSet.yVals
                 
-                let entryFrom = dataSet.entryForXIndex(_minX)!
-                let entryTo = dataSet.entryForXIndex(_maxX)!
+                let entryFrom = dataSet.entryForXIndex(max(_boundMinX, _minX))!
+                let entryTo = dataSet.entryForXIndex(min(_boundMaxX, _maxX))!
                 
                 let diff = (entryFrom == entryTo) ? 1 : 0
                 let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-                let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+                let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), min(entries.count, _boundMaxX))
                 
                 var positions = trans.generateTransformedValuesLine(
                     entries,
@@ -491,12 +494,12 @@ public class LineChartRenderer: LineScatterCandleRadarChartRenderer
             let circleHoleRadius = circleHoleDiameter / 2.0
             let isDrawCircleHoleEnabled = dataSet.isDrawCircleHoleEnabled
             
-            let entryFrom = dataSet.entryForXIndex(_minX)!
-            let entryTo = dataSet.entryForXIndex(_maxX)!
+            let entryFrom = dataSet.entryForXIndex(max(_boundMinX, _minX))!
+            let entryTo = dataSet.entryForXIndex(min(_boundMaxX - 1, _maxX))!
             
             let diff = (entryFrom == entryTo) ? 1 : 0
             let minx = max(dataSet.entryIndex(entry: entryFrom, isEqual: true) - diff, 0)
-            let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), entries.count)
+            let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo, isEqual: true) + 1), min(entries.count, _boundMaxX))
             
             for (var j = minx, count = Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))); j < count; j++)
             {

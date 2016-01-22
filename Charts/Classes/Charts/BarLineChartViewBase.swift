@@ -1735,7 +1735,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return max((pt.x <= 0.0) ? 0 : Int(pt.x + 1.0), self.startIndex)
+            return (pt.x <= 0.0) ? 0 : Int(pt.x + 1.0)
     }
     
     /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
@@ -1743,7 +1743,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return min((_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x), self.endIndex)
+            return (_data != nil && Int(pt.x) >= _data.xValCount) ? _data.xValCount - 1 : Int(pt.x)
     }
 }
 
