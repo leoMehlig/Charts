@@ -239,6 +239,9 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         
         for (var i = _minX; i <= _maxX; i += _xAxis.axisLabelModulus)
         {
+            guard i >= _boundMinX && i < _boundMaxX else { continue }
+
+            
             position.x = CGFloat(i)
             position.y = 0.0
             position = CGPointApplyAffineTransform(position, valueToPixelMatrix)

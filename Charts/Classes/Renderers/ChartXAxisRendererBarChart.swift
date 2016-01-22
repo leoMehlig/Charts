@@ -136,6 +136,8 @@ public class ChartXAxisRendererBarChart: ChartXAxisRenderer
         
         for (var i = _minX; i < _maxX; i += _xAxis.axisLabelModulus)
         {
+            guard i >= _boundMinX && i <= _boundMaxX else { continue }
+
             position.x = CGFloat(i * step) + CGFloat(i) * barData.groupSpace - 0.5
             position.y = 0.0
             position = CGPointApplyAffineTransform(position, valueToPixelMatrix)
