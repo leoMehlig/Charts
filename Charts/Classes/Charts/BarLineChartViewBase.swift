@@ -1092,7 +1092,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         setNeedsDisplay()
     }
     
-    public func zoomToXRange(xIndex: Int, length: Int) {
+    public func zoomToXRange(xIndex: CGFloat, length: CGFloat) {
         var matrix = _viewPortHandler.touchMatrix
         matrix.a = _deltaX / CGFloat(length)
         _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
@@ -1765,19 +1765,19 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     }
     
     /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
-    public var lowestVisibleX: Double
+    public var lowestVisibleX: CGFloat
         {
             var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (pt.x <= 0.0) ? 0 : Double(pt.x + 1.0)
+            return (pt.x <= 0.0) ? 0 : CGFloat(pt.x + 1.0)
     }
     
     /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
-    public var highestVisibleX: Double
+    public var highestVisibleX: CGFloat
         {
             var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
             getTransformer(.Left).pixelToValue(&pt)
-            return (_data != nil && Int(pt.x) >= _data.xValCount) ? Double(_data.xValCount - 1) : Double(pt.x)
+            return (_data != nil && Int(pt.x) >= _data.xValCount) ? CGFloat(_data.xValCount - 1) : CGFloat(pt.x)
     }
 }
 

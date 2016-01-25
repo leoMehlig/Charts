@@ -124,7 +124,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     }
     
     
-    public override var lowestVisibleX: Double
+    public override var lowestVisibleX: CGFloat
         {
             let step = CGFloat(_data.dataSetCount)
             let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
@@ -133,10 +133,10 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
             var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
             getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
             
-            return Double((pt.x <= CGFloat(chartXMin)) ? 0.0 : pt.x / div + barSpace)
+            return pt.x <= CGFloat(chartXMin) ? 0.0 : pt.x / div + barSpace
     }
     
-    public override var highestVisibleX: Double
+    public override var highestVisibleX: CGFloat
         {
             let step = CGFloat(_data.dataSetCount)
             let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
@@ -144,7 +144,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
             var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
             getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
             
-            return Double((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
+            return pt.x >= CGFloat(chartXMax) ? CGFloat(chartXMax) / div : (pt.x / div)
     }
     // MARK: Accessors
     
@@ -181,15 +181,15 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
         }
     }
     
-    public override func zoomToXRange(xIndex: Int, length: Int) {
+    public override func zoomToXRange(xIndex: CGFloat, length: CGFloat) {
         if let d = barData {
             
             var matrix = _viewPortHandler.touchMatrix
-            matrix.a = _deltaX / (CGFloat(length * d.dataSetCount) + d.groupSpace * CGFloat(length))
+            matrix.a = _deltaX / (length * CGFloat(d.dataSetCount) + d.groupSpace * length)
             _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
             
             let space = ((d.dataSets.first as? BarChartDataSet)?.barSpace ?? 0)  / 2
-            var pt = CGPoint(x: CGFloat(xIndex * d.dataSetCount) + 1 + space, y: 0.0)
+            var pt = CGPoint(x: xIndex * CGFloat(d.dataSetCount) + 1 + space, y: 0.0)
             
             getTransformer(.Left).pointValueToPixel(&pt)
             
