@@ -195,6 +195,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
             
             pt.x += 2
             pt.y = _viewPortHandler.offsetTop
+            if xIndex == 0 { pt.x = _viewPortHandler.offsetLeft }
             _viewPortHandler.centerViewPort(pt: pt, chart: self)
         }
     }
