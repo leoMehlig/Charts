@@ -884,8 +884,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             }
         }
     }
-    
-    private func performPanChange(var translation translation: CGPoint) -> Bool
+    private func _performPanChange(var translation translation: CGPoint) -> (Bool, Bool)
     {
         if (isAnyAxisInverted && _closestDataSetToTouch !== nil
             && getAxis(_closestDataSetToTouch.axisDependency).isInverted)
@@ -913,7 +912,13 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         }
         
         // Did we managed to actually drag or did we reach the edge?
-        return matrix.tx != originalMatrix.tx || matrix.ty != originalMatrix.ty
+        return (matrix.tx != originalMatrix.tx, matrix.ty != originalMatrix.ty)
+    }
+    
+    private func performPanChange(translation translation: CGPoint) -> Bool
+    {
+        let (x, y) = _performPanChange(translation: translation)
+        return x || y
     }
     
     public func stopDeceleration()
@@ -939,12 +944,19 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             y: _decelerationVelocity.y * timeInterval
         )
         
-        if (!performPanChange(translation: distance))
+        let (changeX, changeY) = _performPanChange(translation: distance)
+        if (!changeX)
         {
-            // We reached the edge, stop
+            //Horizontal edge reached
             _decelerationVelocity.x = 0.0
+        }
+        
+        if (!changeY)
+        {
+            //Vertical edge reached
             _decelerationVelocity.y = 0.0
         }
+        
         
         _decelerationLastTime = currentTime
         
