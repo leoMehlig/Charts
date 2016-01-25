@@ -185,7 +185,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
         if let d = barData {
             
             var matrix = _viewPortHandler.touchMatrix
-            matrix.a = _deltaX / (length * CGFloat(d.dataSetCount) + d.groupSpace * length)
+            matrix.a = _deltaX / ((length + 1) * CGFloat(d.dataSetCount) + d.groupSpace * (length + 1))
             _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
             
             let space = ((d.dataSets.first as? BarChartDataSet)?.barSpace ?? 0)  / 2
