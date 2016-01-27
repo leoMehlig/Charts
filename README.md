@@ -1,4 +1,4 @@
-**Version 2.1.6**, synced to [MPAndroidChart #0c97941](https://github.com/PhilJay/MPAndroidChart/commit/0c97941)
+**Version 2.2.0**, synced to [MPAndroidChart #d1839b4](https://github.com/PhilJay/MPAndroidChart/commit/d1839b4)
 
 ![alt tag](https://raw.github.com/danielgindi/ios-charts/master/Assets/feature_graphic.png)
   ![Supported Platforms](https://img.shields.io/cocoapods/p/Charts.svg) [![Releases](https://img.shields.io/github/release/danielgindi/ios-charts.svg)](https://github.com/danielgindi/ios-charts/releases) [![Latest pod release](https://img.shields.io/cocoapods/v/Charts.svg)](http://cocoapods.org/pods/charts)
@@ -24,12 +24,30 @@ In order to correctly compile:
 5.  When using Swift in an ObjC project:
    - You need to import your Bridging Header. Usually it is "*YourProject-Swift.h*", so in ChartsDemo it's "*ChartsDemo-Swift.h*". Do not try to actually include "*ChartsDemo-Swift.h*" in your project :-)
    - Under "Build Options", mark "Embedded Content Contains Swift Code"
+6. When using Realm.io:
+   - Note that the Realm framework is not linked with Charts - it is only there for *optional* bindings. Which means that you need to have the framework in your project, and in a compatible version to whatever is compiled with Charts. We will do our best to always compile against the latest version.
 
 
 If you want to compile for iOS 7:
 
 1. Drag the code itself (.swift files) to your project. As sadly, Swift currently does not support compiling Frameworks for iOS 7.
 2. Make sure that the files are added to the Target membership.
+3. If you do not need/want support for *Realm.io*, you can make the `Realm.framework` *optional* in your Build Phases, or avoid copying the `Realm` folder and the `Realm.framework`.
+
+## Troubleshooting
+
+#### Can't compile?
+
+* Please note the difference between installing a compiled framework from Cocoapods or Carthage, and copying the source code.
+* If you are compiling the source code and not using Realm, please *delete* the folder `Charts/Classes/Data/Implementation/Realm` to remove Realm.io support.
+* Please read the **Usage** section again.
+* Search in the issues
+* Try to politely ask in the issues section
+
+#### Other problems / feature requests
+
+* Search in the issues
+* Try to politely ask in the issues section
 
 ## CocoaPods Install
 
@@ -41,8 +59,8 @@ Add `pod 'Charts'` to your Podfile. "Charts" is the name of the library.
 Charts now include Carthage prebuilt binaries.
 
 ```carthage
-github "danielgindi/ios-charts" == 2.1.6
-github "danielgindi/ios-charts" ~> 2.1.6
+github "danielgindi/ios-charts" == 2.2.0
+github "danielgindi/ios-charts" ~> 2.2.0
 ```
 
 In order to build the binaries for a new release, use `carthage build --no-skip-current && carthage archive Charts`.
@@ -64,7 +82,7 @@ If you are having questions or problems, you should:
 
  - Make sure you are using the latest version of the library. Check the [**release-section**](https://github.com/danielgindi/ios-charts/releases).
  - Study the Android version's [**Documentation-Wiki**](https://github.com/PhilJay/MPAndroidChart/wiki)
- - Study the (Still incomplete [![Doc-Percent](https://img.shields.io/cocoapods/metrics/doc-percent/Charts.svg)](http://cocoadocs.org/docsets/Charts/2.1.6)) [**Pod-Documentation**](http://cocoadocs.org/docsets/Charts/2.1.6)
+ - Study the (Still incomplete [![Doc-Percent](https://img.shields.io/cocoapods/metrics/doc-percent/Charts.svg)](http://cocoadocs.org/docsets/Charts/2.2.0)) [**Pod-Documentation**](http://cocoadocs.org/docsets/Charts/2.2.0)
  - Search or open questions on [**stackoverflow**](http://stackoverflow.com/questions/tagged/ios-charts) with the `ios-charts` tag
  - Search [**known issues**](https://github.com/danielgindi/ios-charts/issues) for your problem (open and closed)
  - Create new issues (please **search known issues before**, do not create duplicate issues)
@@ -78,10 +96,9 @@ Features
  - Scaling on both axes (with touch-gesture, axes separately or pinch-zoom)
  - Dragging / Panning (with touch-gesture)
  - Combined-Charts (line-, bar-, scatter-, candle-stick-, bubble-)
- - Dual (separate) Y-Axis
- - Finger drawing (draw values into the chart with touch-gesture)
+ - Dual (separate) Axes
+ - Customizeable Axes (both x- and y-axis)
  - Highlighting values (with customizeable popup-views)
- - Multiple / Separate Axes
  - Save chart to camera-roll / export to PNG/JPEG
  - Predefined color templates
  - Legends (generated automatically, customizeable)
@@ -89,7 +106,8 @@ Features
  - Animations (build up animations, on both x- and y-axis)
  - Limit lines (providing additional information, maximums, ...)
  - Fully customizeable (paints, typefaces, legends, colors, background, gestures, dashed lines, ...)
- 
+ - Plotting data directly from [**Realm.io**](https://realm.io) mobile database
+
 **Chart types:**
 
 *Screenshots are currently taken from the original repository, as they render exactly the same :-)*
@@ -102,6 +120,9 @@ Features
 
  - **LineChart (cubic lines)**
 ![alt tag](https://raw.github.com/PhilJay/MPChart/master/screenshots/cubiclinechart.png)
+
+ - **LineChart (gradient fill)**
+![alt tag](https://raw.github.com/PhilJay/MPAndroidChart/master/screenshots/line_chart_gradient.png)
 
  - **Combined-Chart (bar- and linechart in this case)**
 ![alt tag](https://raw.github.com/PhilJay/MPChart/master/screenshots/combined_chart.png)
