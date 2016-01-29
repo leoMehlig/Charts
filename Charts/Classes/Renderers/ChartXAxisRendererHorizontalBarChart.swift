@@ -22,7 +22,7 @@ public class ChartXAxisRendererHorizontalBarChart: ChartXAxisRendererBarChart
         super.init(viewPortHandler: viewPortHandler, xAxis: xAxis, transformer: transformer, chart: chart)
     }
     
-    public override func computeAxis(xValAverageLength xValAverageLength: Double, xValMaxLength: Int, xValues: [String?])
+    public override func computeAxis(xValAverageLength xValAverageLength: Double, xValues: [String?])
     {
         guard let xAxis = xAxis else { return }
         
@@ -35,16 +35,12 @@ public class ChartXAxisRendererHorizontalBarChart: ChartXAxisRendererBarChart
         let labelWidth = floor(labelSize.width + xAxis.xOffset * 3.5)
         let labelHeight = labelSize.height
         
-        let maxLengthString = (0..<xValMaxLength).reduce("", combine: { $0.0 + "h" }) as NSString
-        let maxSize = maxLengthString.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont])
-
-        let labelRotatedSize = ChartUtils.sizeOfRotatedRectangle(rectangleWidth: labelSize.width, rectangleHeight:  labelHeight, degrees: _xAxis.labelRotationAngle)
-        let maxRotatedSize = ChartUtils.sizeOfRotatedRectangle(rectangleWidth: maxSize.width, rectangleHeight:  maxSize.height, degrees: _xAxis.labelRotationAngle)
+        let labelRotatedSize = ChartUtils.sizeOfRotatedRectangle(rectangleWidth: labelSize.width, rectangleHeight:  labelHeight, degrees: xAxis.labelRotationAngle)
         
-        _xAxis.labelWidth = labelWidth
-        _xAxis.labelHeight = labelHeight
-        _xAxis.labelRotatedWidth = round(maxRotatedSize.width + _xAxis.xOffset * 3.5)
-        _xAxis.labelRotatedHeight = round(labelRotatedSize.height)
+        xAxis.labelWidth = labelWidth
+        xAxis.labelHeight = labelHeight
+        xAxis.labelRotatedWidth = round(labelRotatedSize.width + xAxis.xOffset * 3.5)
+        xAxis.labelRotatedHeight = round(labelRotatedSize.height)
     }
 
     public override func renderAxisLabels(context context: CGContext)

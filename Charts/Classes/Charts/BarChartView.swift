@@ -22,7 +22,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, all values are drawn above their bars, instead of below their top
     private var _drawValueAboveBarEnabled = true
-    
+
     /// if set to true, a grey area is darawn behind each bar that indicates the maximum value
     private var _drawBarShadowEnabled = false
     
@@ -71,7 +71,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
         
         return self.highlighter?.getHighlight(x: Double(pt.x), y: Double(pt.y))
     }
-    
+        
     /// - returns: the bounding box of the specified Entry in the specified DataSet. Returns null if the Entry could not be found in the charts data.
     public func getBarBounds(e: BarChartDataEntry) -> CGRect
     {
@@ -102,25 +102,25 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     }
     
     public override var lowestVisibleXIndex: Int
-        {
-            let step = CGFloat(_data.dataSetCount)
-            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
-            
-            var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
-            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
-            
-            return Int((pt.x <= CGFloat(chartXMin)) ? 0.0 : (pt.x / div) + 1.0)
+    {
+        let step = CGFloat(_data.dataSetCount)
+        let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+        
+        var pt = CGPoint(x: _viewPortHandler.contentLeft, y: _viewPortHandler.contentBottom)
+        getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+        
+        return Int((pt.x <= CGFloat(chartXMin)) ? 0.0 : (pt.x / div) + 1.0)
     }
-    
+
     public override var highestVisibleXIndex: Int
-        {
-            let step = CGFloat(_data.dataSetCount)
-            let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
-            
-            var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
-            getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
-            
-            return Int((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
+    {
+        let step = CGFloat(_data.dataSetCount)
+        let div = (step <= 1.0) ? 1.0 : step + (_data as! BarChartData).groupSpace
+        
+        var pt = CGPoint(x: _viewPortHandler.contentRight, y: _viewPortHandler.contentBottom)
+        getTransformer(ChartYAxis.AxisDependency.Left).pixelToValue(&pt)
+        
+        return Int((pt.x >= CGFloat(chartXMax)) ? CGFloat(chartXMax) / div : (pt.x / div))
     }
     
     
@@ -150,7 +150,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// flag that enables or disables the highlighting arrow
     public var drawHighlightArrowEnabled: Bool
-        {
+    {
         get { return _drawHighlightArrowEnabled; }
         set
         {
@@ -161,7 +161,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, all values are drawn above their bars, instead of below their top
     public var drawValueAboveBarEnabled: Bool
-        {
+    {
         get { return _drawValueAboveBarEnabled; }
         set
         {
@@ -172,7 +172,7 @@ public class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
     public var drawBarShadowEnabled: Bool
-        {
+    {
         get { return _drawBarShadowEnabled; }
         set
         {

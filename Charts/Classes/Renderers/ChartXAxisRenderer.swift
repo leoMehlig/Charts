@@ -26,7 +26,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         self.xAxis = xAxis
     }
     
-    public func computeAxis(xValAverageLength xValAverageLength: Double, xValMaxLength: Int, xValues: [String?])
+    public func computeAxis(xValAverageLength xValAverageLength: Double, xValues: [String?])
     {
         guard let xAxis = xAxis else { return }
         
@@ -46,15 +46,12 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         let labelWidth = labelSize.width
         let labelHeight = labelSize.height
         
-        let maxLengthString = (0..<xValMaxLength).reduce("", combine: { $0.0 + "h" }) as NSString
+        let labelRotatedSize = ChartUtils.sizeOfRotatedRectangle(labelSize, degrees: xAxis.labelRotationAngle)
         
-        let maxSize = maxLengthString.sizeWithAttributes([NSFontAttributeName: _xAxis.labelFont])
-        
-        
-        _xAxis.labelWidth = labelWidth
-        _xAxis.labelHeight = labelHeight
-        _xAxis.labelRotatedWidth = ChartUtils.sizeOfRotatedRectangle(labelSize, degrees: _xAxis.labelRotationAngle).width
-        _xAxis.labelRotatedHeight = ChartUtils.sizeOfRotatedRectangle(maxSize, degrees: _xAxis.labelRotationAngle).height
+        xAxis.labelWidth = labelWidth
+        xAxis.labelHeight = labelHeight
+        xAxis.labelRotatedWidth = labelRotatedSize.width
+        xAxis.labelRotatedHeight = labelRotatedSize.height
         
         xAxis.values = xValues
     }
@@ -251,8 +248,6 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         
         for i in self.minX.stride(to: self.maxX, by: xAxis.axisLabelModulus)
         {
-            guard i >= _boundMinX && i < _boundMaxX else { continue }
-
             position.x = CGFloat(i)
             position.y = 0.0
             position = CGPointApplyAffineTransform(position, valueToPixelMatrix)

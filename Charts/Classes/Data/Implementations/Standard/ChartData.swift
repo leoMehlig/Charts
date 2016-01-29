@@ -321,17 +321,6 @@ public class ChartData: NSObject
         return _xValAverageLength
     }
     
-    public var xValMaxLength: Int
-    {
-        return _xValMaxLength
-    }
-    
-    /// - returns: the total y-value sum across all DataSet objects the this object represents.
-    public var yValueSum: Double
-    {
-        return _yValueSum
-    }
-    
     /// - returns: the total number of y-values across all DataSet objects the this object represents.
     public var yValCount: Int
     {

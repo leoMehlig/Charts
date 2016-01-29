@@ -139,8 +139,6 @@ public class ChartXAxisRendererBarChart: ChartXAxisRenderer
         
         for i in self.minX.stride(to: self.maxX, by: xAxis.axisLabelModulus)
         {
-            guard i >= _boundMinX && i <= _boundMaxX else { continue }
-
             position.x = CGFloat(i * step) + CGFloat(i) * barData.groupSpace - 0.5
             position.y = 0.0
             position = CGPointApplyAffineTransform(position, valueToPixelMatrix)
