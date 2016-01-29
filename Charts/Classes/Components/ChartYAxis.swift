@@ -189,7 +189,7 @@ public class ChartYAxis: ChartAxisBase
     
     public func getRequiredHeightSpace() -> CGFloat
     {
-        return requiredSize().height + yOffset
+        return requiredSize().height + 2.5 * 2.0 + yOffset
     }
 
     public override func getLongestLabel() -> String

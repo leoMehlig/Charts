@@ -16,13 +16,12 @@ import CoreGraphics
 
 public class ChartDataRendererBase: ChartRendererBase
 {
-    public var animator: ChartAnimator?
+    internal var _animator: ChartAnimator!
     
     public init(animator: ChartAnimator?, viewPortHandler: ChartViewPortHandler)
     {
         super.init(viewPortHandler: viewPortHandler)
-        
-        self.animator = animator
+        _animator = animator
     }
 
     public func drawData(context context: CGContext)

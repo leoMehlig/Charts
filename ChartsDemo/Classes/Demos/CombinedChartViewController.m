@@ -81,7 +81,7 @@
 {
     if ([key isEqualToString:@"toggleLineValues"])
     {
-        for (NSObject<IChartDataSet> *set in _chartView.data.dataSets)
+        for (ChartDataSet *set in _chartView.data.dataSets)
         {
             if ([set isKindOfClass:LineChartDataSet.class])
             {
@@ -94,7 +94,7 @@
     
     if ([key isEqualToString:@"toggleBarValues"])
     {
-        for (NSObject<IChartDataSet> *set in _chartView.data.dataSets)
+        for (ChartDataSet *set in _chartView.data.dataSets)
         {
             if ([set isKindOfClass:BarChartDataSet.class])
             {

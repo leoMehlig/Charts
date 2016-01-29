@@ -108,7 +108,7 @@
 {
     if ([key isEqualToString:@"toggleValues"])
     {
-        for (id<IChartDataSet> set in _chartView.data.dataSets)
+        for (ChartDataSet *set in _chartView.data.dataSets)
         {
             set.drawValuesEnabled = !set.isDrawValuesEnabled;
         }

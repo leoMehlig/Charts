@@ -124,9 +124,39 @@
 {
     if ([key isEqualToString:@"toggleValues"])
     {
-        for (id<IChartDataSet> set in _chartView.data.dataSets)
+        for (ChartDataSet *set in _chartView.data.dataSets)
         {
             set.drawValuesEnabled = !set.isDrawValuesEnabled;
+        }
+        
+        [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleFilled"])
+    {
+        for (LineChartDataSet *set in _chartView.data.dataSets)
+        {
+            set.drawFilledEnabled = !set.isDrawFilledEnabled;
+        }
+        
+        [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleCircles"])
+    {
+        for (LineChartDataSet *set in _chartView.data.dataSets)
+        {
+            set.drawCirclesEnabled = !set.isDrawCirclesEnabled;
+        }
+        
+        [_chartView setNeedsDisplay];
+    }
+    
+    if ([key isEqualToString:@"toggleCubic"])
+    {
+        for (LineChartDataSet *set in _chartView.data.dataSets)
+        {
+            set.drawCubicEnabled = !set.isDrawCubicEnabled;
         }
         
         [_chartView setNeedsDisplay];
@@ -181,7 +211,7 @@
     
     if ([key isEqualToString:@"toggleShadowColorSameAsCandle"])
     {
-        for (id<ICandleChartDataSet> set in _chartView.data.dataSets)
+        for (CandleChartDataSet *set in _chartView.data.dataSets)
         {
             set.shadowColorSameAsCandle = !set.shadowColorSameAsCandle;
         }
