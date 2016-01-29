@@ -65,8 +65,8 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
             return
         }
         
-        let yOffset = _xAxis.yOffset
-        let anchorOffset = _xAxis.labelAnchorOffset
+        let yOffset = xAxis.yOffset
+        let anchorOffset = xAxis.labelAnchorOffset
         
         if (xAxis.labelPosition == .Top)
         {
@@ -74,7 +74,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         }
         else if (xAxis.labelPosition == .TopInside)
         {
-            drawLabels(context: context, pos: viewPortHandler.contentTop + yOffset + _xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5 + anchorOffset.x, y: 1.0 + anchorOffset.y))
+            drawLabels(context: context, pos: viewPortHandler.contentTop + yOffset + xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5 + anchorOffset.x, y: 1.0 + anchorOffset.y))
         }
         else if (xAxis.labelPosition == .Bottom)
         {
@@ -82,7 +82,7 @@ public class ChartXAxisRenderer: ChartAxisRendererBase
         }
         else if (xAxis.labelPosition == .BottomInside)
         {
-            drawLabels(context: context, pos: viewPortHandler.contentBottom - yOffset - _xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5 + anchorOffset.x, y: 0.0 + anchorOffset.y))
+            drawLabels(context: context, pos: viewPortHandler.contentBottom - yOffset - xAxis.labelRotatedHeight, anchor: CGPoint(x: 0.5 + anchorOffset.x, y: 0.0 + anchorOffset.y))
         }
         else
         { // BOTH SIDED
