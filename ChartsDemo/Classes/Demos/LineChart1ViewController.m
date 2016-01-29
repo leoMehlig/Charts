@@ -140,8 +140,18 @@
     set1.circleRadius = 3.0;
     set1.drawCircleHoleEnabled = NO;
     set1.valueFont = [UIFont systemFontOfSize:9.f];
-    set1.fillAlpha = 65/255.0;
-    set1.fillColor = UIColor.blackColor;
+    //set1.fillAlpha = 65/255.0;
+    //set1.fillColor = UIColor.blackColor;
+    
+    NSArray *gradientColors = @[
+                        (id)[ChartColorTemplates colorFromString:@"#00ff0000"].CGColor,
+                        (id)[ChartColorTemplates colorFromString:@"#ffff0000"].CGColor
+                        ];
+    CGGradientRef gradient = CGGradientCreateWithColors(nil, (CFArrayRef)gradientColors, nil);
+    
+    set1.fillAlpha = 1.f;
+    set1.fill = [ChartFill fillWithLinearGradient:gradient angle:90.f];
+    set1.drawFilledEnabled = YES;
     
     NSMutableArray *dataSets = [[NSMutableArray alloc] init];
     [dataSets addObject:set1];
@@ -155,7 +165,7 @@
 {
     if ([key isEqualToString:@"toggleValues"])
     {
-        for (ChartDataSet *set in _chartView.data.dataSets)
+        for (id<IChartDataSet> set in _chartView.data.dataSets)
         {
             set.drawValuesEnabled = !set.isDrawValuesEnabled;
         }
@@ -165,7 +175,7 @@
     
     if ([key isEqualToString:@"toggleFilled"])
     {
-        for (LineChartDataSet *set in _chartView.data.dataSets)
+        for (id<ILineChartDataSet> set in _chartView.data.dataSets)
         {
             set.drawFilledEnabled = !set.isDrawFilledEnabled;
         }
@@ -175,7 +185,7 @@
     
     if ([key isEqualToString:@"toggleCircles"])
     {
-        for (LineChartDataSet *set in _chartView.data.dataSets)
+        for (id<ILineChartDataSet> set in _chartView.data.dataSets)
         {
             set.drawCirclesEnabled = !set.isDrawCirclesEnabled;
         }
@@ -185,7 +195,7 @@
     
     if ([key isEqualToString:@"toggleCubic"])
     {
-        for (LineChartDataSet *set in _chartView.data.dataSets)
+        for (id<ILineChartDataSet> set in _chartView.data.dataSets)
         {
             set.drawCubicEnabled = !set.isDrawCubicEnabled;
         }

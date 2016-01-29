@@ -18,7 +18,8 @@ import UIKit
 /// Base-class of LineChart, BarChart, ScatterChart and CandleStickChart.
 public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartDataProvider, UIGestureRecognizerDelegate
 {
-    /// the maximum number of entried to which values will be drawn
+    /// the maximum number of entries to which values will be drawn
+    /// (entry numbers greater than this value will cause value-labels to disappear)
     internal var _maxVisibleValueCount = 100
     
     /// flag that indicates if auto scaling on the y axis is enabled
@@ -40,7 +41,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     public var borderLineWidth: CGFloat = 1.0
     
     /// flag indicating if the grid background should be drawn or not
-    public var drawGridBackgroundEnabled = true
+    public var drawGridBackgroundEnabled = false
     
     /// Sets drawing the borders rectangle to true. If this is enabled, there is no point drawing the axis-lines of x- and y-axis.
     public var drawBordersEnabled = false
@@ -48,9 +49,10 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     /// Sets the minimum offset (padding) around the chart, defaults to 10
     public var minOffset = CGFloat(10.0)
     
-    /// the object representing the labels on the y-axis, this object is prepared
-    /// in the pepareYLabels() method
+    /// the object representing the left y-axis
     internal var _leftAxis: ChartYAxis!
+    
+    /// the object representing the right y-axis
     internal var _rightAxis: ChartYAxis!
     
     /// the object representing the labels on the x-axis
@@ -106,7 +108,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         _xAxisRenderer = ChartXAxisRenderer(viewPortHandler: _viewPortHandler, xAxis: _xAxis, transformer: _leftAxisTransformer)
         
-        _highlighter = ChartHighlighter(chart: self)
+        self.highlighter = ChartHighlighter(chart: self)
         
         _tapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector("tapGestureRecognized:"))
         _doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: Selector("doubleTapGestureRecognized:"))
@@ -626,7 +628,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     private var _isDragging = false
     private var _isScaling = false
     private var _gestureScaleAxis = GestureScaleAxis.Both
-    private var _closestDataSetToTouch: ChartDataSet!
+    private var _closestDataSetToTouch: IChartDataSet!
     private var _panGestureReachedEdge: Bool = false
     private weak var _outerScrollView: UIScrollView?
     
@@ -1143,7 +1145,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     }
     
     /// Sets the size of the area (range on the x-axis) that should be minimum visible at once (no further zooming in allowed).
-    /// If this is e.g. set to 10, no more than 10 values on the x-axis can be viewed at once without scrolling.
+    /// If this is e.g. set to 10, no less than 10 values on the x-axis can be viewed at once without scrolling.
     public func setVisibleXRangeMinimum(minXRange: CGFloat)
     {
         let xScale = _deltaX / minXRange
@@ -1489,12 +1491,12 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     }
     
     /// - returns: the DataSet object displayed at the touched position of the chart
-    public func getDataSetByTouchPoint(pt: CGPoint) -> BarLineScatterCandleBubbleChartDataSet!
+    public func getDataSetByTouchPoint(pt: CGPoint) -> IBarLineScatterCandleBubbleChartDataSet!
     {
         let h = getHighlightByTouchPoint(pt)
         if (h !== nil)
         {
-            return _data.getDataSetByIndex(h!.dataSetIndex) as! BarLineScatterCandleBubbleChartDataSet!
+            return _data.getDataSetByIndex(h!.dataSetIndex) as! IBarLineScatterCandleBubbleChartDataSet!
         }
         return nil
     }
@@ -1800,7 +1802,7 @@ internal class BarLineChartFillFormatter: NSObject, ChartFillFormatter
     {
     }
     
-    internal func getFillLinePosition(dataSet dataSet: LineChartDataSet, dataProvider: LineChartDataProvider) -> CGFloat
+    internal func getFillLinePosition(dataSet dataSet: ILineChartDataSet, dataProvider: LineChartDataProvider) -> CGFloat
     {
         var fillMin = CGFloat(0.0)
         

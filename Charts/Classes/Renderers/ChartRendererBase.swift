@@ -20,10 +20,10 @@ public class ChartRendererBase: NSObject
     public var viewPortHandler: ChartViewPortHandler!
     
     /// the minimum value on the x-axis that should be plotted
-    internal var _minX: Int = 0
+    public var minX: Int = 0
     
     /// the maximum value on the x-axis that should be plotted
-    internal var _maxX: Int = 0
+    public var maxX: Int = 0
     
     public override init()
     {
