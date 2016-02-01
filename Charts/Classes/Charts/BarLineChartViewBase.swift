@@ -132,24 +132,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         #endif
     }
     
-    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        /// In the superclass this methode recalculates and redraws the chart after a size change
-        /// To preserve the x-position of the chart we convert the current origin into "point values"
-        /// After the recalucation we convert the point values back to the pixels (using the new generater transformer) and move the chart to this position
-        
-        var oldPoint: CGPoint?
-        if keyPath == "frame" || keyPath == "bounds" {
-            oldPoint = viewPortHandler.contentRect.origin
-            getTransformer(.Left).pixelToValue(&oldPoint!)
-        }
-        super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
-        if var p = oldPoint {
-            getTransformer(.Left).pointValueToPixel(&p)
-            viewPortHandler.centerViewPort(pt: p, chart: self)
-        }
-        
-    }
-    
     public override func drawRect(rect: CGRect)
     {
         super.drawRect(rect)
@@ -279,11 +261,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _leftAxisTransformer.prepareMatrixOffset(_leftAxis.isInverted)
     }
     
-    public func updateData(data: ChartData) {
-        let oldDeltaX = self._deltaX
-        self.data = data
-        zoom(self._deltaX / oldDeltaX, scaleY: 1, x: 0, y: 0)
-    }
+   
     
     public override func notifyDataSetChanged()
     {
@@ -808,7 +786,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
                 let didUserDrag = (self is HorizontalBarChartView) ? translation.y != 0.0 : translation.x != 0.0
                 
                 // Check to see if user dragged at all and if so, can the chart be dragged by the given amount
-                if (didUserDrag && !performPanChange(translation: translation))
+                let didPan = performPanChange(translation: translation)
+                if (didUserDrag && !(didPan.0 || didPan.1))
                 {
                     if (_outerScrollView !== nil)
                     {
@@ -886,7 +865,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             }
         }
     }
-    private func _performPanChange(var translation translation: CGPoint) -> (Bool, Bool)
+    private func performPanChange(var translation translation: CGPoint) -> (Bool, Bool)
     {
         if (isAnyAxisInverted && _closestDataSetToTouch !== nil
             && getAxis(_closestDataSetToTouch.axisDependency).isInverted)
@@ -917,12 +896,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         return (matrix.tx != originalMatrix.tx, matrix.ty != originalMatrix.ty)
     }
     
-    private func performPanChange(translation translation: CGPoint) -> Bool
-    {
-        let (x, y) = _performPanChange(translation: translation)
-        return x || y
-    }
-    
     public func stopDeceleration()
     {
         if (_decelerationDisplayLink !== nil)
@@ -946,7 +919,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             y: _decelerationVelocity.y * timeInterval
         )
         
-        let (changeX, changeY) = _performPanChange(translation: distance)
+        let (changeX, changeY) = performPanChange(translation: distance)
         if (!changeX)
         {
             //Horizontal edge reached
@@ -1104,19 +1077,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         calculateOffsets()
         setNeedsDisplay()
     }
-    
-    public func zoomToXRange(xIndex: CGFloat, length: CGFloat) {
-        var matrix = _viewPortHandler.touchMatrix
-        matrix.a = _deltaX / CGFloat(length)
-        _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
-        
-        var pt = CGPoint(x: CGFloat(xIndex), y: 0.0)
-        
-        getTransformer(.Left).pointValueToPixel(&pt)
-        pt.y = _viewPortHandler.offsetTop
-        _viewPortHandler.centerViewPort(pt: pt, chart: self)
-    }
-    
+
     /// Resets all zooming and dragging and makes the chart fit exactly it's bounds.
     public func fitScreen()
     {
@@ -1171,8 +1132,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _viewPortHandler.setMinimumScaleY(yScale)
     }
 
-    
-   
     /// Moves the left side of the current viewport to the specified x-index.
     /// This also refreshes the chart by calling setNeedsDisplay().
     public func moveViewToX(xIndex: Int)
@@ -1189,7 +1148,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             _sizeChangeEventActions.append({[weak self] () in self?.moveViewToX(xIndex); })
         }
     }
-    
+
     /// Centers the viewport to the specified y-value on the y-axis.
     /// This also refreshes the chart by calling setNeedsDisplay().
     /// 
@@ -1507,7 +1466,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         }
         return _viewPortHandler.scaleX
     }
-    
+
     /// - returns: the current y-scale factor
     public var scaleY: CGFloat
     {
@@ -1754,10 +1713,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         return getAxis(axis).isInverted
     }
     
-    public var startIndex: Int = 0
-    
-    public var endIndex: Int = Int.max
-    
     /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
     public var lowestVisibleXIndex: Int
     {
@@ -1772,22 +1727,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
         getTransformer(.Left).pixelToValue(&pt)
         return (_data != nil && Int(round(pt.x)) >= _data.xValCount) ? _data.xValCount - 1 : Int(round(pt.x))
-    }
-    
-    /// - returns: the lowest x-index (value on the x-axis) that is still visible on he chart.
-    public var lowestVisibleX: CGFloat
-        {
-            var pt = CGPoint(x: viewPortHandler.contentLeft, y: viewPortHandler.contentBottom)
-            getTransformer(.Left).pixelToValue(&pt)
-            return (pt.x <= 0.0) ? 0 : CGFloat(pt.x + 1.0)
-    }
-    
-    /// - returns: the highest x-index (value on the x-axis) that is still visible on the chart.
-    public var highestVisibleX: CGFloat
-        {
-            var pt = CGPoint(x: viewPortHandler.contentRight, y: viewPortHandler.contentBottom)
-            getTransformer(.Left).pixelToValue(&pt)
-            return (_data != nil && Int(pt.x) >= _data.xValCount) ? CGFloat(_data.xValCount - 1) : CGFloat(pt.x)
     }
 }
 
