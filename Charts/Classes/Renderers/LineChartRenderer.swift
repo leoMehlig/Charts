@@ -89,25 +89,14 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         let entryCount = dataSet.entryCount
         
-        var fromEnty: ChartDataEntry?
-        var toEntry: ChartDataEntry?
-        for x in (self.minX...self.maxX) {
-            let entry = dataSet.entryForXIndex(x)
-            if let e = entry {
-                if fromEnty == nil {
-                    fromEnty = e
-                }
-                toEntry = e
-            } else if toEntry != nil {
-                break
-            }
-        }
+        guard let
+            entryFrom = dataSet.entryForXIndex(self.minX),
+            entryTo = dataSet.entryForXIndex(self.maxX)
+            else { return }
         
-        guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
-                toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else { return }
-        let diff = (fromIndex == toIndex) ? 1 : 0
-        let minx = max(fromIndex - diff, 0)
-        let maxx = min(max(minx + 2, toIndex + 1), entryCount)
+        let diff = (entryFrom == entryTo) ? 1 : 0
+        let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
         
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
@@ -158,7 +147,7 @@ public class LineChartRenderer: LineRadarChartRenderer
                 prevPrev = prev
                 prev = cur
                 cur = next
-                next = dataSet.entryForIndex(j + 1) ?? cur
+                next = dataSet.entryForIndex(j + 1)
                 
                 if next == nil { break }
                 
@@ -256,26 +245,14 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         CGContextSaveGState(context)
         
-        var fromEnty: ChartDataEntry?
-        var toEntry: ChartDataEntry?
-        for x in (self.minX...self.maxX) {
-            let entry = dataSet.entryForXIndex(x)
-            if let e = entry {
-                if fromEnty == nil {
-                    fromEnty = e
-                }
-                toEntry = e
-            } else if toEntry != nil {
-                break
-            }
-        }
+        guard let
+            entryFrom = dataSet.entryForXIndex(self.minX),
+            entryTo = dataSet.entryForXIndex(self.maxX)
+            else { return }
         
-        guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
-            toIndex = toEntry.map({dataSet.entryIndex(entry: $0) })else { return }
-        
-        let diff = (fromIndex == toIndex) ? 1 : 0
-        let minx = max(fromIndex - diff, 0)
-        let maxx = min(max(minx + 2, toIndex + 1), entryCount)
+        let diff = (entryFrom == entryTo) ? 1 : 0
+        let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+        let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
         
         // more than 1 color
         if (dataSet.colors.count > 1)
@@ -475,20 +452,14 @@ public class LineChartRenderer: LineRadarChartRenderer
                 
                 let entryCount = dataSet.entryCount
                 
-                var optinalFromIndex: Int?
-                for x in (self.minX...self.maxX) {
-                    if let entry = dataSet.entryForXIndex(x) {
-                        optinalFromIndex = dataSet.entryIndex(entry: entry)
-                        break
-                    }
-                }
+                guard let
+                    entryFrom = dataSet.entryForXIndex(self.minX),
+                    entryTo = dataSet.entryForXIndex(self.maxX)
+                    else { continue }
                 
-                guard let fromIndex = optinalFromIndex else { return }
-                let toIndex = dataSet.entryIndex(xIndex: self.maxX)
-                
-                let diff = (fromIndex == toIndex) ? 1 : 0
-                let minx = max(fromIndex - diff, 0)
-                let maxx = min(max(minx + 2, toIndex + 1), entryCount)
+                let diff = (entryFrom == entryTo) ? 1 : 0
+                let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+                let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
                 
                 for (var j = minx, count = Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))); j < count; j++)
                 {
@@ -563,19 +534,14 @@ public class LineChartRenderer: LineRadarChartRenderer
             let circleHoleRadius = circleHoleDiameter / 2.0
             let isDrawCircleHoleEnabled = dataSet.isDrawCircleHoleEnabled
             
-            var optinalFromIndex: Int?
-            for x in (self.minX...self.maxX) {
-                if let entry = dataSet.entryForXIndex(x) {
-                    optinalFromIndex = dataSet.entryIndex(entry: entry)
-                    break
-                }
-            }
-            guard let fromIndex = optinalFromIndex else { return }
-            let toIndex = dataSet.entryIndex(xIndex: self.maxX)
+            guard let
+                entryFrom = dataSet.entryForXIndex(self.minX),
+                entryTo = dataSet.entryForXIndex(self.maxX)
+                else { continue }
             
-            let diff = (fromIndex == toIndex) ? 1 : 0
-            let minx = max(fromIndex - diff, 0)
-            let maxx = min(max(minx + 2, toIndex + 1), entryCount)
+            let diff = (entryFrom == entryTo) ? 1 : 0
+            let minx = max(dataSet.entryIndex(entry: entryFrom) - diff, 0)
+            let maxx = min(max(minx + 2, dataSet.entryIndex(entry: entryTo) + 1), entryCount)
             
             for (var j = minx, count = Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))); j < count; j++)
             {
