@@ -44,9 +44,6 @@ public class ChartXAxis: ChartAxisBase
     /// This is the angle for drawing the X axis labels (in degrees)
     public var labelRotationAngle = CGFloat(0.0)
     
-    /// The offset of the label relative to the chart-entry postition
-    public var labelAnchorOffset = CGPoint(x: 0.0, y: 0.0)
-    
     /// the space that should be left out (in characters) between the x-axis labels
     /// This only applies if the number of labels that will be skipped in between drawn axis labels is not custom set.
     /// 
