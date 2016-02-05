@@ -89,6 +89,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         let entryCount = dataSet.entryCount
         
+        //Searching for a range with non-nil entries
         var fromEnty: ChartDataEntry?
         var toEntry: ChartDataEntry?
         for x in (self.minX...self.maxX) {
@@ -256,6 +257,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         CGContextSaveGState(context)
         
+        //Searching for a range with non-nil entries
         var fromEnty: ChartDataEntry?
         var toEntry: ChartDataEntry?
         for x in (self.minX...self.maxX) {
@@ -271,7 +273,10 @@ public class LineChartRenderer: LineRadarChartRenderer
         }
         
         guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
-            toIndex = toEntry.map({dataSet.entryIndex(entry: $0) })else { return }
+            toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else {
+                CGContextRestoreGState(context)
+                return
+        }
         
         let diff = (fromIndex == toIndex) ? 1 : 0
         let minx = max(fromIndex - diff, 0)
