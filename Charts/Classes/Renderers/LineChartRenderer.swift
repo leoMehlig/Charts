@@ -80,16 +80,9 @@ public class LineChartRenderer: LineRadarChartRenderer
         CGContextRestoreGState(context)
     }
     
-    public func drawCubic(context context: CGContext, dataSet: ILineChartDataSet)
-    {
-        guard let
-            trans = dataProvider?.getTransformer(dataSet.axisDependency),
-            animator = animator
-            else { return }
-        
-        let entryCount = dataSet.entryCount
-        
-        //Searching for a range with non-nil entries
+    
+    // returns: The first visible non-nil-entry (first) and the one before the next nil-entry (last)
+    internal func getFirstAndLastIndex(dataSet: ILineChartDataSet) -> (first: Int, last: Int)? {
         var fromEnty: ChartDataEntry?
         var toEntry: ChartDataEntry?
         for x in (self.minX...self.maxX) {
@@ -99,13 +92,27 @@ public class LineChartRenderer: LineRadarChartRenderer
                     fromEnty = e
                 }
                 toEntry = e
-            } else if toEntry != nil {
+            } else if fromEnty != nil {
                 break
             }
         }
         
         guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
-                toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else { return }
+            toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else { return nil }
+        return (fromIndex, toIndex)
+    }
+    
+    public func drawCubic(context context: CGContext, dataSet: ILineChartDataSet)
+    {
+        guard let
+            trans = dataProvider?.getTransformer(dataSet.axisDependency),
+            animator = animator
+            else { return }
+        
+        let entryCount = dataSet.entryCount
+        
+        guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
+        
         let diff = (fromIndex == toIndex) ? 1 : 0
         let minx = max(fromIndex - diff, 0)
         let maxx = min(max(minx + 2, toIndex + 1), entryCount)
@@ -255,33 +262,15 @@ public class LineChartRenderer: LineRadarChartRenderer
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
         
-        CGContextSaveGState(context)
         
-        //Searching for a range with non-nil entries
-        var fromEnty: ChartDataEntry?
-        var toEntry: ChartDataEntry?
-        for x in (self.minX...self.maxX) {
-            let entry = dataSet.entryForXIndex(x)
-            if let e = entry {
-                if fromEnty == nil {
-                    fromEnty = e
-                }
-                toEntry = e
-            } else if toEntry != nil {
-                break
-            }
-        }
-        
-        guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
-            toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else {
-                CGContextRestoreGState(context)
-                return
-        }
+        guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
         
         let diff = (fromIndex == toIndex) ? 1 : 0
         let minx = max(fromIndex - diff, 0)
         let maxx = min(max(minx + 2, toIndex + 1), entryCount)
         
+        CGContextSaveGState(context)
+
         // more than 1 color
         if (dataSet.colors.count > 1)
         {
@@ -480,16 +469,8 @@ public class LineChartRenderer: LineRadarChartRenderer
                 
                 let entryCount = dataSet.entryCount
                 
-                var optinalFromIndex: Int?
-                for x in (self.minX...self.maxX) {
-                    if let entry = dataSet.entryForXIndex(x) {
-                        optinalFromIndex = dataSet.entryIndex(entry: entry)
-                        break
-                    }
-                }
-                
-                guard let fromIndex = optinalFromIndex else { return }
-                let toIndex = dataSet.entryIndex(xIndex: self.maxX)
+                guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
+
                 
                 let diff = (fromIndex == toIndex) ? 1 : 0
                 let minx = max(fromIndex - diff, 0)
@@ -568,15 +549,8 @@ public class LineChartRenderer: LineRadarChartRenderer
             let circleHoleRadius = circleHoleDiameter / 2.0
             let isDrawCircleHoleEnabled = dataSet.isDrawCircleHoleEnabled
             
-            var optinalFromIndex: Int?
-            for x in (self.minX...self.maxX) {
-                if let entry = dataSet.entryForXIndex(x) {
-                    optinalFromIndex = dataSet.entryIndex(entry: entry)
-                    break
-                }
-            }
-            guard let fromIndex = optinalFromIndex else { return }
-            let toIndex = dataSet.entryIndex(xIndex: self.maxX)
+            guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
+
             
             let diff = (fromIndex == toIndex) ? 1 : 0
             let minx = max(fromIndex - diff, 0)
