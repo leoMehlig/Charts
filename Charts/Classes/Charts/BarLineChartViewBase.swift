@@ -784,7 +784,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
                 let didUserDrag = (self is HorizontalBarChartView) ? translation.y != 0.0 : translation.x != 0.0
                 
                 // Check to see if user dragged at all and if so, can the chart be dragged by the given amount
-                if (didUserDrag && !performPanChange(translation: translation))
+                let didPan = performPanChange(translation: translation)
+                if (didUserDrag && !(didPan.x || didPan.y))
                 {
                     if (_outerScrollView !== nil)
                     {
@@ -863,7 +864,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         }
     }
     
-    private func performPanChange(var translation translation: CGPoint) -> Bool
+    private func performPanChange(var translation translation: CGPoint) -> (x: Bool, y: Bool)
     {
         if (isAnyAxisInverted && _closestDataSetToTouch !== nil
             && getAxis(_closestDataSetToTouch.axisDependency).isInverted)
@@ -891,7 +892,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         }
         
         // Did we managed to actually drag or did we reach the edge?
-        return matrix.tx != originalMatrix.tx || matrix.ty != originalMatrix.ty
+        return (matrix.tx != originalMatrix.tx, matrix.ty != originalMatrix.ty)
     }
     
     public func stopDeceleration()
@@ -916,11 +917,16 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             x: _decelerationVelocity.x * timeInterval,
             y: _decelerationVelocity.y * timeInterval
         )
-        
-        if (!performPanChange(translation: distance))
+        let didPan = performPanChange(translation: distance)
+        if (!didPan.x)
         {
-            // We reached the edge, stop
+            //Horizontal edge reached
             _decelerationVelocity.x = 0.0
+        }
+        
+        if (!didPan.y)
+        {
+            //Vertical edge reached
             _decelerationVelocity.y = 0.0
         }
         
