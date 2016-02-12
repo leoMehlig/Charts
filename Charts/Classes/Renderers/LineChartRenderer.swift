@@ -261,10 +261,9 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
-        
-        
+
         guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
-        
+
         let diff = (fromIndex == toIndex) ? 1 : 0
         let minx = max(fromIndex - diff, 0)
         let maxx = min(max(minx + 2, toIndex + 1), entryCount)
@@ -452,7 +451,6 @@ public class LineChartRenderer: LineRadarChartRenderer
                 }
                 
                 let valueFont = dataSet.valueFont
-                let valueTextColor = dataSet.valueTextColor
                 
                 guard let formatter = dataSet.valueFormatter else { continue }
                 
@@ -500,7 +498,7 @@ public class LineChartRenderer: LineRadarChartRenderer
                             x: pt.x,
                             y: pt.y - CGFloat(valOffset) - valueFont.lineHeight),
                         align: .Center,
-                        attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: valueTextColor])
+                        attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: dataSet.valueTextColorAt(j)])
                 }
             }
         }
