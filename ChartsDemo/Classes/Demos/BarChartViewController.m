@@ -59,6 +59,8 @@
     xAxis.labelFont = [UIFont systemFontOfSize:10.f];
     xAxis.drawGridLinesEnabled = NO;
     xAxis.spaceBetweenLabels = 2.0;
+    xAxis.labelRotationAngle = -45.0;
+    xAxis.labelAnchorOffset = CGPointMake(0.5, 0.0);
     
     ChartYAxis *leftAxis = _chartView.leftAxis;
     leftAxis.startAtZeroEnabled = YES;

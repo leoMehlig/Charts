@@ -262,6 +262,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
 
+
         guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
 
         let diff = (fromIndex == toIndex) ? 1 : 0
