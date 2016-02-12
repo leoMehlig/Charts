@@ -22,7 +22,13 @@ public protocol ICandleChartDataSet: ILineScatterCandleRadarChartDataSet
     
     /// the space that is left out on the left and right side of each candle,
     /// **default**: 0.1 (10%), max 0.45, min 0.0
-    var bodySpace: CGFloat { get set }
+    var barSpace: CGFloat { get set }
+    
+    /// should the candle bars show?
+    /// when false, only "ticks" will show
+    ///
+    /// **default**: true
+    var showCandleBar: Bool { get set }
     
     /// the width of the candle-shadow-line in pixels.
     ///
@@ -38,21 +44,24 @@ public protocol ICandleChartDataSet: ILineScatterCandleRadarChartDataSet
     /// Is the shadow color same as the candle color?
     var isShadowColorSameAsCandle: Bool { get }
     
-    /// color for open <= close
-    var decreasingColor: UIColor? { get set }
+    /// color for open == close
+    var neutralColor: UIColor? { get set }
     
     /// color for open > close
     var increasingColor: UIColor? { get set }
     
-    /// Are decreasing values drawn as filled?
-    var decreasingFilled: Bool { get set }
-    
-    /// Are decreasing values drawn as filled?
-    var isDecreasingFilled: Bool { get }
+    /// color for open < close
+    var decreasingColor: UIColor? { get set }
     
     /// Are increasing values drawn as filled?
     var increasingFilled: Bool { get set }
     
     /// Are increasing values drawn as filled?
     var isIncreasingFilled: Bool { get }
+    
+    /// Are decreasing values drawn as filled?
+    var decreasingFilled: Bool { get set }
+    
+    /// Are decreasing values drawn as filled?
+    var isDecreasingFilled: Bool { get }
 }

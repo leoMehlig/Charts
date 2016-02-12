@@ -1,7 +1,7 @@
-**Version 2.2.0**, synced to [MPAndroidChart #d1839b4](https://github.com/PhilJay/MPAndroidChart/commit/d1839b4)
+**Version 2.2.2**, synced to [MPAndroidChart #9615cc2](https://github.com/PhilJay/MPAndroidChart/commit/9615cc2)
 
 ![alt tag](https://raw.github.com/danielgindi/ios-charts/master/Assets/feature_graphic.png)
-  ![Supported Platforms](https://img.shields.io/cocoapods/p/Charts.svg) [![Releases](https://img.shields.io/github/release/danielgindi/ios-charts.svg)](https://github.com/danielgindi/ios-charts/releases) [![Latest pod release](https://img.shields.io/cocoapods/v/Charts.svg)](http://cocoapods.org/pods/charts)
+  ![Supported Platforms](https://img.shields.io/cocoapods/p/Charts.svg) [![Releases](https://img.shields.io/github/release/danielgindi/ios-charts.svg)](https://github.com/danielgindi/ios-charts/releases) [![Latest pod release](https://img.shields.io/cocoapods/v/Charts.svg)](http://cocoapods.org/pods/charts) [![Build Status](https://travis-ci.org/danielgindi/ios-charts.svg?branch=master)](https://travis-ci.org/danielgindi/ios-charts)
 
 * Xcode 7 / Swift 2.0
 * iOS 7.0 (Drag .swift files to your project)
@@ -32,14 +32,14 @@ If you want to compile for iOS 7:
 
 1. Drag the code itself (.swift files) to your project. As sadly, Swift currently does not support compiling Frameworks for iOS 7.
 2. Make sure that the files are added to the Target membership.
-3. If you do not need/want support for *Realm.io*, you can make the `Realm.framework` *optional* in your Build Phases, or avoid copying the `Realm` folder, the `Utils/RealmChartUtils.swift` and the `Realm.framework`.
 
 ## Troubleshooting
 
 #### Can't compile?
 
-* Please note the difference between installing a compiled framework from Cocoapods or Carthage, and copying the source code.
-* If you are compiling the source code and not using Realm, please *delete* the folder `Charts/Classes/Data/Implementation/Realm` and `Charts/Classes/Utils/RealmChartUtils.swift` to remove Realm.io support.
+* Please note the difference between installing a compiled framework from CocoaPods or Carthage, and copying the source code.
+* If you are using Realm, please also `#import <ChartsRealm/ChartsRealm.h>`
+* If you are compiling the source code and want to use Realm, please make sure to include the code from `ChartsRealm` project.
 * Please read the **Usage** section again.
 * Search in the issues
 * Try to politely ask in the issues section
@@ -52,6 +52,12 @@ If you want to compile for iOS 7:
 ## CocoaPods Install
 
 Add `pod 'Charts'` to your Podfile. "Charts" is the name of the library.  
+
+For Realm support you can specify the subspec in your Podfile as follows:
+```
+pod 'Charts/Realm'
+```
+
 **Note:** ~~`pod 'ios-charts'`~~ is not the correct library, and refers to a different project by someone else.
 
 ## Carthage Install
@@ -59,19 +65,18 @@ Add `pod 'Charts'` to your Podfile. "Charts" is the name of the library.
 Charts now include Carthage prebuilt binaries.
 
 ```carthage
-github "danielgindi/ios-charts" == 2.2.0
-github "danielgindi/ios-charts" ~> 2.2.0
+github "danielgindi/ios-charts" == 2.2.2
+github "danielgindi/ios-charts" ~> 2.2.2
 ```
 
-In order to build the binaries for a new release, use `carthage build --no-skip-current && carthage archive Charts`.
+In order to build the binaries for a new release, use `carthage build --no-skip-current && carthage archive Charts && carthage archive ChartsRealm`.
 
 ## Help
 
 If you like what you see here, and want to support the work being done in this repository, you could:
 * Contribute code, issues and pull requests
 * Let people know this library exists (spread the word!)
-* 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=68UL6Y8KUPS96) (You can buy me a beer, or you can buy me dinner :-)
+* [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=68UL6Y8KUPS96) (You can buy me a beer, or you can buy me dinner :-)
 
 **Note:** The author of [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) is the reason that this library exists, and is accepting [donations](https://github.com/PhilJay/MPAndroidChart#donations) on his page. He deserves them!
 
@@ -172,7 +177,7 @@ Or you can see the [**ChartsDemo**](https://github.com/danielgindi/ios-charts/tr
 Special Thanks
 =======
 
-Goes to [@liuxuan30](https://github.com/liuxuan30), [@petester42](https://github.com/petester42) and  [@AlBirdie](https://github.com/AlBirdie) for new features, bugfixes, and lots and lots of involvement in our open-sourced community! You guys are a huge help to all of those coming here with questions and issues, and I couldn't respond to all of those without you. 
+Goes to [@liuxuan30](https://github.com/liuxuan30), [@petester42](https://github.com/petester42) and  [@AlBirdie](https://github.com/AlBirdie) for new features, bugfixes, and lots and lots of involvement in our open-sourced community! You guys are a huge help to all of those coming here with questions and issues, and I couldn't respond to all of those without you.
 
 License
 =======
