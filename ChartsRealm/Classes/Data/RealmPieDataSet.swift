@@ -13,7 +13,7 @@
 //
 
 import Foundation
-import UIKit
+
 import Charts
 import Realm
 import Realm.Dynamic
@@ -22,8 +22,8 @@ public class RealmPieDataSet: RealmBaseDataSet, IPieChartDataSet
 {
     public override func initialize()
     {
-        self.valueTextColor = UIColor.whiteColor()
-        self.valueFont = UIFont.systemFontOfSize(13.0)
+        self.valueTextColor = NSUIColor.whiteColor()
+        self.valueFont = NSUIFont.systemFontOfSize(13.0)
     }
     
     // MARK: - Data functions and accessors
@@ -69,8 +69,9 @@ public class RealmPieDataSet: RealmBaseDataSet, IPieChartDataSet
     
     private var _sliceSpace = CGFloat(0.0)
     
-    /// the space that is left out between the piechart-slices, default: 0°
-    /// --> no space, maximum 45, minimum 0 (no space)
+    /// the space in pixels between the pie-slices
+    /// **default**: 0
+    /// **maximum**: 20
     public var sliceSpace: CGFloat
     {
         get
@@ -79,15 +80,16 @@ public class RealmPieDataSet: RealmBaseDataSet, IPieChartDataSet
         }
         set
         {
-            _sliceSpace = newValue
-            if (_sliceSpace > 45.0)
+            var space = newValue
+            if (space > 20.0)
             {
-                _sliceSpace = 45.0
+                space = 20.0
             }
-            if (_sliceSpace < 0.0)
+            if (space < 0.0)
             {
-                _sliceSpace = 0.0
+                space = 0.0
             }
+            _sliceSpace = space
         }
     }
     

@@ -13,7 +13,11 @@
 
 import Foundation
 import CoreGraphics
-import UIKit
+
+#if !os(OSX)
+    import UIKit
+#endif
+
 
 public class ChartYAxisRenderer: ChartAxisRendererBase
 {
@@ -141,6 +145,11 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 
                 for (f = first, i = 0; i < n; f += interval, ++i)
                 {
+                    if (f == 0.0)
+                    { // Fix for IEEE negative zero case (Where value == -0.0, and 0.0 == -0.0)
+                        f = 0.0
+                    }
+                    
                     yAxis.entries[i] = Double(f)
                 }
             }
@@ -289,13 +298,11 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         {
             CGContextSaveGState(context)
             
-            if (!yAxis.gridAntialiasEnabled)
-            {
-                CGContextSetShouldAntialias(context, false)
-            }
-            
+            CGContextSetShouldAntialias(context, yAxis.gridAntialiasEnabled)
             CGContextSetStrokeColorWithColor(context, yAxis.gridColor.CGColor)
             CGContextSetLineWidth(context, yAxis.gridLineWidth)
+            CGContextSetLineCap(context, yAxis.gridLineCap)
+            
             if (yAxis.gridLineDashLengths != nil)
             {
                 CGContextSetLineDash(context, yAxis.gridLineDashPhase, yAxis.gridLineDashLengths, yAxis.gridLineDashLengths.count)

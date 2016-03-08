@@ -13,7 +13,11 @@
 
 import Foundation
 import CoreGraphics
-import UIKit
+
+#if !os(OSX)
+    import UIKit
+#endif
+
 
 public class ChartYAxisRendererHorizontalBarChart: ChartYAxisRenderer
 {
@@ -187,8 +191,11 @@ public class ChartYAxisRendererHorizontalBarChart: ChartYAxisRenderer
             // pre alloc
             var position = CGPoint()
             
+            CGContextSetShouldAntialias(context, yAxis.gridAntialiasEnabled)
             CGContextSetStrokeColorWithColor(context, yAxis.gridColor.CGColor)
             CGContextSetLineWidth(context, yAxis.gridLineWidth)
+            CGContextSetLineCap(context, yAxis.gridLineCap)
+
             if (yAxis.gridLineDashLengths != nil)
             {
                 CGContextSetLineDash(context, yAxis.gridLineDashPhase, yAxis.gridLineDashLengths, yAxis.gridLineDashLengths.count)
