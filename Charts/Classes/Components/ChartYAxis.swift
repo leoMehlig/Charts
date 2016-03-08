@@ -13,7 +13,12 @@
 //
 
 import Foundation
-import UIKit
+import CoreGraphics
+
+#if !os(OSX)
+    import UIKit
+#endif
+
 
 /// Class representing the y-axis labels settings and its entries.
 /// Be aware that not all features the YLabels class provides are suitable for the RadarChart.
@@ -50,8 +55,25 @@ public class ChartYAxis: ChartAxisBase
     /// flag that indicates if the axis is inverted or not
     public var inverted = false
     
-    /// if true, the y-label entries will always start at zero
-    public var startAtZeroEnabled = true
+    /// This property is deprecated - Use `customAxisMin` instead.
+    public var startAtZeroEnabled: Bool
+    {
+        get
+        {
+            return customAxisMin == 0.0
+        }
+        set
+        {
+            if newValue
+            {
+                customAxisMin = 0.0
+            }
+            else
+            {
+                resetCustomAxisMin()
+            }
+        }
+    }
     
     /// if true, the set number of y-labels will be forced
     public var forceLabelsEnabled = false
@@ -60,7 +82,7 @@ public class ChartYAxis: ChartAxisBase
     public var drawZeroLineEnabled = true
     
     /// Color of the zero line
-    public var zeroLineColor: UIColor? = UIColor.grayColor()
+    public var zeroLineColor: NSUIColor? = NSUIColor.grayColor()
     
     /// Width of the zero line
     public var zeroLineWidth: CGFloat = 1.0
@@ -252,7 +274,9 @@ public class ChartYAxis: ChartAxisBase
     
     public var isInverted: Bool { return inverted; }
     
-    public var isStartAtZeroEnabled: Bool { return startAtZeroEnabled; }
+    /// This is deprecated now, use `customAxisMin`
+    @available(*, deprecated=1.0, message="Use customAxisMin instead.")
+    public var isStartAtZeroEnabled: Bool { return startAtZeroEnabled }
 
     /// - returns: true if focing the y-label count is enabled. Default: false
     public var isForceLabelsEnabled: Bool { return forceLabelsEnabled }
