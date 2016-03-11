@@ -87,21 +87,20 @@ public class LineChartRenderer: LineRadarChartRenderer
     
     // returns: The first visible non-nil-entry (first) and the one before the next nil-entry (last)
     internal func getFirstAndLastIndex(dataSet: ILineChartDataSet) -> (first: Int, last: Int)? {
-        var fromEnty: ChartDataEntry?
+        var fromEntry: ChartDataEntry?
         var toEntry: ChartDataEntry?
-        for x in (self.minX...self.maxX) {
-            let entry = dataSet.entryForXIndex(x)
-            if let e = entry {
-                if fromEnty == nil {
-                    fromEnty = e
-                }
-                toEntry = e
-            } else if fromEnty != nil {
+        for x in (max(self.minX, 0)...self.maxX) {
+            if fromEntry == nil {
+                fromEntry = dataSet.entryForXIndex(x, rounding: .Down)
+            }
+            if let to = dataSet.entryForXIndex(x, rounding: .Up) {
+                toEntry = to
+            } else if fromEntry != nil {
                 break
             }
         }
         
-        guard let fromIndex = fromEnty.map({dataSet.entryIndex(entry: $0) }),
+        guard let fromIndex = fromEntry.map({dataSet.entryIndex(entry: $0) }),
             toIndex = toEntry.map({dataSet.entryIndex(entry: $0) }) else { return nil }
         return (fromIndex, toIndex)
     }
@@ -114,7 +113,6 @@ public class LineChartRenderer: LineRadarChartRenderer
             else { return }
         
         let entryCount = dataSet.entryCount
-        
         guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
         
         let diff = (fromIndex == toIndex) ? 1 : 0
@@ -239,7 +237,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         // What we need to draw is line from points of the xIndexes - not arbitrary entry indexes!
         let xTo = dataSet.entryForIndex(to - 1)?.xIndex ?? 0
         let xFrom = dataSet.entryForIndex(from)?.xIndex ?? 0
-
+        
         var pt1 = CGPoint(x: CGFloat(xTo), y: fillMin)
         var pt2 = CGPoint(x: CGFloat(xFrom), y: fillMin)
         pt1 = CGPointApplyAffineTransform(pt1, matrix)
@@ -275,8 +273,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         let pointsPerEntryPair = isDrawSteppedEnabled ? 4 : 2
         
         let phaseX = animator.phaseX
-        let phaseY = animator.phaseY
-        
+        let phaseY = animator.phaseY        
         
         guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
         
@@ -285,7 +282,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         let maxx = min(max(minx + 2, toIndex + 1), entryCount)
         
         CGContextSaveGState(context)
-
+        
         // more than 1 color
         if (dataSet.colors.count > 1)
         {
@@ -329,7 +326,7 @@ public class LineChartRenderer: LineRadarChartRenderer
                 {
                     _lineSegments[1] = _lineSegments[0]
                 }
-
+                
                 for i in 0..<_lineSegments.count
                 {
                     _lineSegments[i] = CGPointApplyAffineTransform(_lineSegments[i], valueToPixelMatrix)
@@ -527,7 +524,6 @@ public class LineChartRenderer: LineRadarChartRenderer
                 let entryCount = dataSet.entryCount
                 
                 guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
-
                 
                 let diff = (fromIndex == toIndex) ? 1 : 0
                 let minx = max(fromIndex - diff, 0)
@@ -606,7 +602,6 @@ public class LineChartRenderer: LineRadarChartRenderer
             let isDrawCircleHoleEnabled = dataSet.isDrawCircleHoleEnabled
             
             guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
-
             
             let diff = (fromIndex == toIndex) ? 1 : 0
             let minx = max(fromIndex - diff, 0)
@@ -615,7 +610,7 @@ public class LineChartRenderer: LineRadarChartRenderer
             for (var j = minx, count = Int(ceil(CGFloat(maxx - minx) * phaseX + CGFloat(minx))); j < count; j++)
             {
                 guard let e = dataSet.entryForIndex(j) else { break }
-
+                
                 pt.x = CGFloat(e.xIndex)
                 pt.y = CGFloat(e.value) * phaseY
                 pt = CGPointApplyAffineTransform(pt, valueToPixelMatrix)
