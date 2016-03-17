@@ -282,7 +282,8 @@ public class LineChartRenderer: LineRadarChartRenderer
         let maxx = min(max(minx + 2, toIndex + 1), entryCount)
         
         CGContextSaveGState(context)
-        
+
+        CGContextSetLineCap(context, dataSet.lineCapType)
         // more than 1 color
         if (dataSet.colors.count > 1)
         {
