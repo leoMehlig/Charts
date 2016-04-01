@@ -73,7 +73,7 @@ public class PieRadarChartViewBase: ChartViewBase
     
     internal override func calcMinMax()
     {
-        _deltaX = CGFloat((_data?.xVals.count ?? 0) - 1)
+        _xAxis.axisRange = Double((_data?.xVals.count ?? 0) - 1)
     }
     
     public override func notifyDataSetChanged()
@@ -337,7 +337,11 @@ public class PieRadarChartViewBase: ChartViewBase
     /// - returns: the diameter of the pie- or radar-chart
     public var diameter: CGFloat
     {
-        let content = _viewPortHandler.contentRect
+        var content = _viewPortHandler.contentRect
+        content.origin.x += extraLeftOffset
+        content.origin.y += extraTopOffset
+        content.size.width -= extraLeftOffset + extraRightOffset
+        content.size.height -= extraTopOffset + extraBottomOffset
         return min(content.width, content.height)
     }
 

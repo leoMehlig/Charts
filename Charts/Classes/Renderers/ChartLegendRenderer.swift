@@ -200,7 +200,7 @@ public class ChartLegendRenderer: ChartRendererBase
                 || legendPosition == .AboveChartRight
                 || legendPosition == .AboveChartCenter)
             {
-                posY = 0
+                posY = yoffset
             }
             else
             {
@@ -218,7 +218,10 @@ public class ChartLegendRenderer: ChartRendererBase
                     posY += labelLineHeight
                 }
                 
-                if (posX == originPosX && legendPosition == .BelowChartCenter && lineIndex < calculatedLineSizes.count)
+                if (posX == originPosX &&
+                    (legendPosition == .BelowChartCenter ||
+                    legendPosition == .AboveChartCenter) &&
+                    lineIndex < calculatedLineSizes.count)
                 {
                     posX += (direction == .RightToLeft ? calculatedLineSizes[lineIndex].width : -calculatedLineSizes[lineIndex].width) / 2.0
                     lineIndex += 1

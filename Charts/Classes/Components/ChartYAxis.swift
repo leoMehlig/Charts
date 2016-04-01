@@ -60,13 +60,13 @@ public class ChartYAxis: ChartAxisBase
     {
         get
         {
-            return customAxisMin == 0.0
+            return isAxisMinCustom && _axisMinimum == 0.0
         }
         set
         {
             if newValue
             {
-                customAxisMin = 0.0
+                axisMinValue = 0.0
             }
             else
             {
@@ -100,28 +100,12 @@ public class ChartYAxis: ChartAxisBase
     
     /// the formatter used to customly format the y-labels
     internal var _defaultValueFormatter = NSNumberFormatter()
-    
-    /// A custom minimum value for this axis. 
-    /// If set, this value will not be calculated automatically depending on the provided data. 
-    /// Use `resetCustomAxisMin()` to undo this.
-    public var customAxisMin = Double.NaN
-        
-    /// A custom maximum value for this axis. 
-    /// If set, this value will not be calculated automatically depending on the provided data. 
-    /// Use `resetCustomAxisMax()` to undo this.
-    public var customAxisMax = Double.NaN
 
     /// axis space from the largest value to the top in percent of the total axis range
     public var spaceTop = CGFloat(0.1)
 
     /// axis space from the smallest value to the bottom in percent of the total axis range
     public var spaceBottom = CGFloat(0.1)
-    
-    public var axisMaximum = Double(0)
-    public var axisMinimum = Double(0)
-    
-    /// the total range of values this axis covers
-    public var axisRange = Double(0)
     
     /// the position of the y-labels relative to the chart
     public var labelPosition = YAxisLabelPosition.OutsideChart
@@ -146,10 +130,11 @@ public class ChartYAxis: ChartAxisBase
     /// If using granularity this could be avoided by having fewer axis values visible.
     public var granularityEnabled = true
     
-    /// the minimum interval between axis values
+    /// The minimum interval between axis values.
+    /// This can be used to avoid label duplicating when zooming in.
     ///
     /// **default**: 1.0
-    public var granuality = Double(1.0)
+    public var granularity = Double(1.0)
     
     public override init()
     {
@@ -211,18 +196,6 @@ public class ChartYAxis: ChartAxisBase
         {
             setLabelCount(newValue, force: false);
         }
-    }
-    
-    /// By calling this method, any custom minimum value that has been previously set is reseted, and the calculation is done automatically.
-    public func resetCustomAxisMin()
-    {
-        customAxisMin = Double.NaN
-    }
-    
-    /// By calling this method, any custom maximum value that has been previously set is reseted, and the calculation is done automatically.
-    public func resetCustomAxisMax()
-    {
-        customAxisMax = Double.NaN
     }
     
     public func requiredSize() -> CGSize
@@ -293,4 +266,42 @@ public class ChartYAxis: ChartAxisBase
     public var isShowOnlyMinMaxEnabled: Bool { return showOnlyMinMaxEnabled; }
     
     public var isDrawTopYLabelEntryEnabled: Bool { return drawTopYLabelEntryEnabled; }
+    
+    /// Calculates the minimum, maximum and range values of the YAxis with the given minimum and maximum values from the chart data.
+    /// - parameter dataMin: the y-min value according to chart data
+    /// - parameter dataMax: the y-max value according to chart
+    public func calcMinMax(min dataMin: Double, max dataMax: Double)
+    {
+        // if custom, use value as is, else use data value
+        var min = _customAxisMin ? _axisMinimum : dataMin
+        var max = _customAxisMax ? _axisMaximum : dataMax
+
+        // temporary range (before calculations)
+        let range = abs(max - min)
+
+        // in case all values are equal
+        if range == 0.0
+        {
+            max = max + 1.0
+            min = min - 1.0
+        }
+
+        // bottom-space only effects non-custom min
+        if !_customAxisMin
+        {
+            let bottomSpace = range * Double(spaceBottom)
+            _axisMinimum = min - bottomSpace
+        }
+
+        // top-space only effects non-custom max
+        if !_customAxisMax
+        {
+            let topSpace = range * Double(spaceTop)
+            _axisMaximum = max + topSpace
+        }
+
+        // calc actual range
+        axisRange = abs(_axisMaximum - _axisMinimum)
+    }
+
 }

@@ -61,9 +61,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     
     /// the object representing the right y-axis
     internal var _rightAxis: ChartYAxis!
-    
-    /// the object representing the labels on the x-axis
-    internal var _xAxis: ChartXAxis!
 
     internal var _leftYAxisRenderer: ChartYAxisRenderer!
     internal var _rightYAxisRenderer: ChartYAxisRenderer!
@@ -104,8 +101,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         _leftAxis = ChartYAxis(position: .Left)
         _rightAxis = ChartYAxis(position: .Right)
-        
-        _xAxis = ChartXAxis()
         
         _leftAxisTransformer = ChartTransformer(viewPortHandler: _viewPortHandler)
         _rightAxisTransformer = ChartTransformer(viewPortHandler: _viewPortHandler)
@@ -192,11 +187,11 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         
         if (_leftAxis.isEnabled)
         {
-            _leftYAxisRenderer?.computeAxis(yMin: _leftAxis.axisMinimum, yMax: _leftAxis.axisMaximum)
+            _leftYAxisRenderer?.computeAxis(yMin: _leftAxis._axisMinimum, yMax: _leftAxis._axisMaximum)
         }
         if (_rightAxis.isEnabled)
         {
-            _rightYAxisRenderer?.computeAxis(yMin: _rightAxis.axisMinimum, yMax: _rightAxis.axisMaximum)
+            _rightYAxisRenderer?.computeAxis(yMin: _rightAxis._axisMinimum, yMax: _rightAxis._axisMaximum)
         }
         
         _xAxisRenderer?.renderAxisLine(context: context)
@@ -224,6 +219,10 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
 
         CGContextClipToRect(context, _viewPortHandler.contentRect)
         
+        _xAxisRenderer?.renderGridLines(context: context)
+        _leftYAxisRenderer?.renderGridLines(context: context)
+        _rightYAxisRenderer?.renderGridLines(context: context)
+        
         if (_xAxis.isDrawLimitLinesBehindDataEnabled)
         {
             _xAxisRenderer?.renderLimitLines(context: context)
@@ -237,11 +236,18 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             _rightYAxisRenderer?.renderLimitLines(context: context)
         }
         
-        _xAxisRenderer?.renderGridLines(context: context)
-        _leftYAxisRenderer?.renderGridLines(context: context)
-        _rightYAxisRenderer?.renderGridLines(context: context)
-        
         renderer?.drawData(context: context)
+
+        // if highlighting is enabled
+        if (valuesToHighlight())
+        {
+            renderer?.drawHighlighted(context: context, indices: _indicesToHighlight)
+        }
+
+        // Removes clipping rectangle
+        CGContextRestoreGState(context)
+        
+        renderer!.drawExtras(context: context)
         
         if (!_xAxis.isDrawLimitLinesBehindDataEnabled)
         {
@@ -255,17 +261,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         {
             _rightYAxisRenderer?.renderLimitLines(context: context)
         }
-
-        // if highlighting is enabled
-        if (valuesToHighlight())
-        {
-            renderer?.drawHighlighted(context: context, indices: _indicesToHighlight)
-        }
-
-        // Removes clipping rectangle
-        CGContextRestoreGState(context)
-        
-        renderer!.drawExtras(context: context)
         
         _xAxisRenderer.renderAxisLabels(context: context)
         _leftYAxisRenderer.renderAxisLabels(context: context)
@@ -283,8 +278,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     
     internal func prepareValuePxMatrix()
     {
-        _rightAxisTransformer.prepareMatrixValuePx(chartXMin: _chartXMin, deltaX: _deltaX, deltaY: CGFloat(_rightAxis.axisRange), chartYMin: _rightAxis.axisMinimum)
-        _leftAxisTransformer.prepareMatrixValuePx(chartXMin: _chartXMin, deltaX: _deltaX, deltaY: CGFloat(_leftAxis.axisRange), chartYMin: _leftAxis.axisMinimum)
+        _rightAxisTransformer.prepareMatrixValuePx(chartXMin: _xAxis._axisMinimum, deltaX: CGFloat(xAxis.axisRange), deltaY: CGFloat(_rightAxis.axisRange), chartYMin: _rightAxis._axisMinimum)
+        _leftAxisTransformer.prepareMatrixValuePx(chartXMin: xAxis._axisMinimum, deltaX: CGFloat(xAxis.axisRange), deltaY: CGFloat(_leftAxis.axisRange), chartYMin: _leftAxis._axisMinimum)
     }
     
     internal func prepareOffsetMatrix()
@@ -300,8 +295,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
         _leftAxis?._defaultValueFormatter = _defaultValueFormatter
         _rightAxis?._defaultValueFormatter = _defaultValueFormatter
         
-        _leftYAxisRenderer?.computeAxis(yMin: _leftAxis.axisMinimum, yMax: _leftAxis.axisMaximum)
-        _rightYAxisRenderer?.computeAxis(yMin: _rightAxis.axisMinimum, yMax: _rightAxis.axisMaximum)
+        _leftYAxisRenderer?.computeAxis(yMin: _leftAxis._axisMinimum, yMax: _leftAxis._axisMaximum)
+        _rightYAxisRenderer?.computeAxis(yMin: _rightAxis._axisMinimum, yMax: _rightAxis._axisMaximum)
         
         if let data = _data
         {
@@ -325,60 +320,13 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             _data?.calcMinMax(start: lowestVisibleXIndex, end: highestVisibleXIndex)
         }
         
-        var minLeft = !isnan(_leftAxis.customAxisMin)
-            ? _leftAxis.customAxisMin
-            : _data?.getYMin(.Left) ?? 0.0
-        var maxLeft = !isnan(_leftAxis.customAxisMax)
-            ? _leftAxis.customAxisMax
-            : _data?.getYMax(.Left) ?? 0.0
-        var minRight = !isnan(_rightAxis.customAxisMin)
-            ? _rightAxis.customAxisMin
-            : _data?.getYMin(.Right) ?? 0.0
-        var maxRight = !isnan(_rightAxis.customAxisMax)
-            ? _rightAxis.customAxisMax
-            : _data?.getYMax(.Right) ?? 0.0
+        // calculate / set x-axis range
+        _xAxis._axisMaximum = Double((_data?.xVals.count ?? 0) - 1)
+        _xAxis.axisRange = .abs(_xAxis._axisMaximum - _xAxis._axisMinimum);
         
-        let leftRange = abs(maxLeft - minLeft)
-        let rightRange = abs(maxRight - minRight)
-        
-        // in case all values are equal
-        if (leftRange == 0.0)
-        {
-            maxLeft = maxLeft + 1.0
-            minLeft = minLeft - 1.0
-        }
-        
-        if (rightRange == 0.0)
-        {
-            maxRight = maxRight + 1.0
-            minRight = minRight - 1.0
-        }
-        
-        let topSpaceLeft = leftRange * Double(_leftAxis.spaceTop)
-        let topSpaceRight = rightRange * Double(_rightAxis.spaceTop)
-        let bottomSpaceLeft = leftRange * Double(_leftAxis.spaceBottom)
-        let bottomSpaceRight = rightRange * Double(_rightAxis.spaceBottom)
-        
-        _chartXMax = Double((_data?.xVals.count ?? 0) - 1)
-        _deltaX = CGFloat(abs(_chartXMax - _chartXMin))
-        
-        // Use the values as they are
-        _leftAxis.axisMinimum = !isnan(_leftAxis.customAxisMin)
-            ? _leftAxis.customAxisMin
-            : (minLeft - bottomSpaceLeft)
-        _leftAxis.axisMaximum = !isnan(_leftAxis.customAxisMax)
-            ? _leftAxis.customAxisMax
-            : (maxLeft + topSpaceLeft)
-        
-        _rightAxis.axisMinimum = !isnan(_rightAxis.customAxisMin)
-            ? _rightAxis.customAxisMin
-            : (minRight - bottomSpaceRight)
-        _rightAxis.axisMaximum = !isnan(_rightAxis.customAxisMax)
-            ? _rightAxis.customAxisMax
-            : (maxRight + topSpaceRight)
-        
-        _leftAxis.axisRange = abs(_leftAxis.axisMaximum - _leftAxis.axisMinimum)
-        _rightAxis.axisRange = abs(_rightAxis.axisMaximum - _rightAxis.axisMinimum)
+        // calculate axis range (min / max) according to provided data
+        _leftAxis.calcMinMax(min: _data?.getYMin(.Left) ?? 0.0, max: _data?.getYMax(.Left) ?? 0.0)
+        _rightAxis.calcMinMax(min: _data?.getYMin(.Right) ?? 0.0, max: _data?.getYMax(.Right) ?? 0.0)
     }
     
     internal override func calculateOffsets()
@@ -1080,7 +1028,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     /// - parameter y:
     public func zoom(scaleX: CGFloat, scaleY: CGFloat, x: CGFloat, y: CGFloat)
     {
-        let matrix = _viewPortHandler.zoom(scaleX: scaleX, scaleY: scaleY, x: x, y: -y)
+        let matrix = _viewPortHandler.zoom(scaleX: scaleX, scaleY: scaleY, x: x, y: y)
         _viewPortHandler.refresh(newMatrix: matrix, chart: self, invalidate: false)
         
         // Range might have changed, which means that Y-axis labels could have changed in size, affecting Y-axis size. So we need to recalculate offsets.
@@ -1211,7 +1159,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     /// If this is e.g. set to 10, no more than 10 values on the x-axis can be viewed at once without scrolling.
     public func setVisibleXRangeMaximum(maxXRange: CGFloat)
     {
-        let xScale = _deltaX / maxXRange
+        let xScale = CGFloat(_xAxis.axisRange) / maxXRange
         _viewPortHandler.setMinimumScaleX(xScale)
     }
     
@@ -1219,7 +1167,7 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     /// If this is e.g. set to 10, no less than 10 values on the x-axis can be viewed at once without scrolling.
     public func setVisibleXRangeMinimum(minXRange: CGFloat)
     {
-        let xScale = _deltaX / minXRange
+        let xScale = CGFloat(_xAxis.axisRange) / minXRange
         _viewPortHandler.setMaximumScaleX(xScale)
     }
 
@@ -1228,8 +1176,8 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     /// at once without scrolling
     public func setVisibleXRange(minXRange minXRange: CGFloat, maxXRange: CGFloat)
     {
-        let maxScale = _deltaX / minXRange
-        let minScale = _deltaX / maxXRange
+        let maxScale = CGFloat(_xAxis.axisRange) / minXRange
+        let minScale = CGFloat(_xAxis.axisRange) / maxXRange
         _viewPortHandler.setMinMaxScaleX(minScaleX: minScale, maxScaleX: maxScale)
     }
     
@@ -1746,14 +1694,6 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
             return _rightAxis
         }
     }
-
-    /// - returns: the object representing all x-labels, this method can be used to
-    /// acquire the XAxis object and modify it (e.g. change the position of the
-    /// labels)
-    public var xAxis: ChartXAxis
-    {
-        return _xAxis
-    }
     
     /// flag that indicates if pinch-zoom is enabled. if true, both x and y axis can be scaled simultaneously with 2 fingers, if false, x and y axis can be scaled separately
     public var pinchZoomEnabled: Bool
@@ -1824,12 +1764,12 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
     
     public override var chartYMax: Double
     {
-        return max(leftAxis.axisMaximum, rightAxis.axisMaximum)
+        return max(leftAxis._axisMaximum, rightAxis._axisMaximum)
     }
 
     public override var chartYMin: Double
     {
-        return min(leftAxis.axisMinimum, rightAxis.axisMinimum)
+        return min(leftAxis._axisMinimum, rightAxis._axisMinimum)
     }
     
     /// - returns: true if either the left or the right or both axes are inverted.
