@@ -55,7 +55,8 @@ public class ChartYAxis: ChartAxisBase
     /// flag that indicates if the axis is inverted or not
     public var inverted = false
     
-    /// This property is deprecated - Use `customAxisMin` instead.
+    /// This property is deprecated - Use `axisMinValue` instead.
+    @available(*, deprecated=1.0, message="Use axisMinValue instead.")
     public var startAtZeroEnabled: Bool
     {
         get
@@ -128,13 +129,28 @@ public class ChartYAxis: ChartAxisBase
     /// When false, axis values could possibly be repeated.
     /// This could happen if two adjacent axis values are rounded to same value.
     /// If using granularity this could be avoided by having fewer axis values visible.
-    public var granularityEnabled = true
+    public var granularityEnabled = false
+    
+    private var _granularity = Double(1.0)
     
     /// The minimum interval between axis values.
     /// This can be used to avoid label duplicating when zooming in.
     ///
     /// **default**: 1.0
-    public var granularity = Double(1.0)
+    public var granularity: Double
+    {
+        get
+        {
+            return _granularity
+        }
+        set
+        {
+            _granularity = newValue
+            
+            // set this to true if it was disabled, as it makes no sense to set this property with granularity disabled
+            granularityEnabled = true
+        }
+    }
     
     public override init()
     {
@@ -256,8 +272,8 @@ public class ChartYAxis: ChartAxisBase
     
     public var isInverted: Bool { return inverted; }
     
-    /// This is deprecated now, use `customAxisMin`
-    @available(*, deprecated=1.0, message="Use customAxisMin instead.")
+    /// This is deprecated now, use `axisMinValue`
+    @available(*, deprecated=1.0, message="Use axisMinValue instead.")
     public var isStartAtZeroEnabled: Bool { return startAtZeroEnabled }
 
     /// - returns: true if focing the y-label count is enabled. Default: false
@@ -270,7 +286,7 @@ public class ChartYAxis: ChartAxisBase
     /// Calculates the minimum, maximum and range values of the YAxis with the given minimum and maximum values from the chart data.
     /// - parameter dataMin: the y-min value according to chart data
     /// - parameter dataMax: the y-max value according to chart
-    public func calcMinMax(min dataMin: Double, max dataMax: Double)
+    public func calculate(min dataMin: Double, max dataMax: Double)
     {
         // if custom, use value as is, else use data value
         var min = _customAxisMin ? _axisMinimum : dataMin
