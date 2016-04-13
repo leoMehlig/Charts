@@ -9,7 +9,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 import Foundation
@@ -64,7 +64,19 @@ public class ChartDataSet: ChartBaseDataSet
     /// the last end value used for calcMinMax
     internal var _lastEnd: Int = 0
     
-    public var yVals: [ChartDataEntry] { return _yVals }
+    /// the array of y-values that this DataSet represents.
+    public var yVals: [ChartDataEntry]
+    {
+        get
+        {
+            return _yVals
+        }
+        set
+        {
+            _yVals = newValue
+            notifyDataSetChanged()
+        }
+    }
     
     /// Use this method to tell the data set that the underlying data has changed
     public override func notifyDataSetChanged()
@@ -98,7 +110,7 @@ public class ChartDataSet: ChartBaseDataSet
         _yMin = DBL_MAX
         _yMax = -DBL_MAX
         
-        for i in start ... endValue
+        for i in start.stride(through: endValue, by: 1)
         {
             let e = _yVals[i]
             

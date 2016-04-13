@@ -9,7 +9,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 import Foundation
@@ -28,6 +28,11 @@ public class RealmLineDataSet: RealmLineRadarDataSet, ILineChartDataSet
     // MARK: - Data functions and accessors
     
     // MARK: - Styling functions and accessors
+    
+    /// The drawing mode for this line dataset
+    ///
+    /// **default**: Linear
+    public var mode: LineChartDataSet.Mode = LineChartDataSet.Mode.Linear
     
     private var _cubicIntensity = CGFloat(0.2)
     
@@ -54,16 +59,36 @@ public class RealmLineDataSet: RealmLineRadarDataSet, ILineChartDataSet
         }
     }
     
-    /// If true, cubic lines are drawn instead of linear
-    public var drawCubicEnabled = false
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
+    public var drawCubicEnabled: Bool
+    {
+        get
+        {
+            return mode == .CubicBezier
+        }
+        set
+        {
+            mode = newValue ? LineChartDataSet.Mode.CubicBezier : LineChartDataSet.Mode.Linear
+        }
+    }
     
-    /// - returns: true if drawing cubic lines is enabled, false if not.
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     public var isDrawCubicEnabled: Bool { return drawCubicEnabled }
     
-    /// If true, stepped lines are drawn instead of linear
-    public var drawSteppedEnabled = false
-
-    /// - returns: true if drawing stepped lines is enabled, false if not.
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
+    public var drawSteppedEnabled: Bool
+    {
+        get
+        {
+            return mode == .Stepped
+        }
+        set
+        {
+            mode = newValue ? LineChartDataSet.Mode.Stepped : LineChartDataSet.Mode.Linear
+        }
+    }
+    
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     public var isDrawSteppedEnabled: Bool { return drawSteppedEnabled }
 
     /// The radius of the drawn circles.
@@ -157,9 +182,10 @@ public class RealmLineDataSet: RealmLineRadarDataSet, ILineChartDataSet
         copy.cubicIntensity = cubicIntensity
         copy.lineDashPhase = lineDashPhase
         copy.lineDashLengths = lineDashLengths
+        copy.lineCapType = lineCapType
         copy.drawCirclesEnabled = drawCirclesEnabled
-        copy.drawCubicEnabled = drawCubicEnabled
-        copy.drawSteppedEnabled = drawSteppedEnabled
+        copy.drawCircleHoleEnabled = drawCircleHoleEnabled
+        copy.mode = mode
         return copy
     }
     

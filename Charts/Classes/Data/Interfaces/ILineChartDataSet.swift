@@ -8,11 +8,12 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 import Foundation
 import CoreGraphics
+
 
 @objc
 public protocol ILineChartDataSet: ILineRadarChartDataSet
@@ -21,21 +22,26 @@ public protocol ILineChartDataSet: ILineRadarChartDataSet
     
     // MARK: - Styling functions and accessors
     
+    /// The drawing mode for this line dataset
+    ///
+    /// **default**: Linear
+    var mode: LineChartDataSet.Mode { get set }
+    
     /// Intensity for cubic lines (min = 0.05, max = 1)
     ///
     /// **default**: 0.2
     var cubicIntensity: CGFloat { get set }
     
-    /// If true, cubic lines are drawn instead of linear
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     var drawCubicEnabled: Bool { get set }
     
-    /// - returns: true if drawing cubic lines is enabled, false if not.
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     var isDrawCubicEnabled: Bool { get }
     
-    /// If true, stepped lines are drawn instead of linear
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     var drawSteppedEnabled: Bool { get set }
     
-    /// - returns: true if drawing stepped lines is enabled, false if not.
+    @available(*, deprecated=1.0, message="Use `mode` instead.")
     var isDrawSteppedEnabled: Bool { get }
 
     /// The radius of the drawn circles.

@@ -8,7 +8,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 #import "StackedBarChartViewController.h"
@@ -43,7 +43,8 @@
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
                      @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
                      @{@"key": @"toggleData", @"label": @"Toggle Data"},
-                     ];
+                     @{@"key": @"toggleBarBorders", @"label": @"Show Bar Borders"},
+                    ];
     
     _chartView.delegate = self;
     
@@ -118,23 +119,33 @@
         [yVals addObject:[[BarChartDataEntry alloc] initWithValues:@[@(val1), @(val2), @(val3)] xIndex:i]];
     }
     
-    BarChartDataSet *set1 = [[BarChartDataSet alloc] initWithYVals:yVals label:@"Statistics Vienna 2014"];
-    set1.colors = @[ChartColorTemplates.vordiplom[0], ChartColorTemplates.vordiplom[1], ChartColorTemplates.vordiplom[2]];
-    set1.stackLabels = @[@"Births", @"Divorces", @"Marriages"];
-    
-    NSMutableArray *dataSets = [[NSMutableArray alloc] init];
-    [dataSets addObject:set1];
-    
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-    formatter.maximumFractionDigits = 1;
-    formatter.negativeSuffix = @" $";
-    formatter.positiveSuffix = @" $";
-    
-    BarChartData *data = [[BarChartData alloc] initWithXVals:xVals dataSets:dataSets];
-    [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:7.f]];
-    [data setValueFormatter:formatter];
-    
-    _chartView.data = data;
+    BarChartDataSet *set1 = nil;
+    if (_chartView.data.dataSetCount > 0)
+    {
+        set1 = (BarChartDataSet *)_chartView.data.dataSets[0];
+        set1.yVals = yVals;
+        [_chartView notifyDataSetChanged];
+    }
+    else
+    {
+        set1 = [[BarChartDataSet alloc] initWithYVals:yVals label:@"Statistics Vienna 2014"];
+        set1.colors = @[ChartColorTemplates.vordiplom[0], ChartColorTemplates.vordiplom[1], ChartColorTemplates.vordiplom[2]];
+        set1.stackLabels = @[@"Births", @"Divorces", @"Marriages"];
+        
+        NSMutableArray *dataSets = [[NSMutableArray alloc] init];
+        [dataSets addObject:set1];
+        
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        formatter.maximumFractionDigits = 1;
+        formatter.negativeSuffix = @" $";
+        formatter.positiveSuffix = @" $";
+        
+        BarChartData *data = [[BarChartData alloc] initWithXVals:xVals dataSets:dataSets];
+        [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:7.f]];
+        [data setValueFormatter:formatter];
+        
+        _chartView.data = data;
+    }
 }
 
 - (void)optionTapped:(NSString *)key

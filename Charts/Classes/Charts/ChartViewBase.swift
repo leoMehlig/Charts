@@ -9,7 +9,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 //  Based on https://github.com/PhilJay/MPAndroidChart/commit/c42b880
 
@@ -530,7 +530,7 @@ public class ChartViewBase: NSUIView, ChartDataProvider, ChartAnimatorDelegate
             let highlight = _indicesToHighlight[i]
             let xIndex = highlight.xIndex
 
-            let deltaX = _xAxis.axisRange
+            let deltaX = _xAxis?.axisRange ?? (Double(_data?.xValCount ?? 0) - 1)
             if xIndex <= Int(deltaX) && xIndex <= Int(CGFloat(deltaX) * _animator.phaseX)
             {
                 let e = _data?.getEntryForHighlight(highlight)

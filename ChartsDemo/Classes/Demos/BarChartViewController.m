@@ -8,7 +8,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 #import "BarChartViewController.h"
@@ -43,6 +43,7 @@
                      @{@"key": @"togglePinchZoom", @"label": @"Toggle PinchZoom"},
                      @{@"key": @"toggleAutoScaleMinMax", @"label": @"Toggle auto scale min/max"},
                      @{@"key": @"toggleData", @"label": @"Toggle Data"},
+                     @{@"key": @"toggleBarBorders", @"label": @"Show Bar Borders"},
                      ];
     
     [self setupBarLineChartView:_chartView];
@@ -128,16 +129,27 @@
         [yVals addObject:[[BarChartDataEntry alloc] initWithValue:val xIndex:i]];
     }
     
-    BarChartDataSet *set1 = [[BarChartDataSet alloc] initWithYVals:yVals label:@"DataSet"];
-    set1.barSpace = 0.35;
-    
-    NSMutableArray *dataSets = [[NSMutableArray alloc] init];
-    [dataSets addObject:set1];
-    
-    BarChartData *data = [[BarChartData alloc] initWithXVals:xVals dataSets:dataSets];
-    [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:10.f]];
-    
-    _chartView.data = data;
+    BarChartDataSet *set1 = nil;
+    if (_chartView.data.dataSetCount > 0)
+    {
+        set1 = (BarChartDataSet *)_chartView.data.dataSets[0];
+        set1.yVals = yVals;
+        [_chartView notifyDataSetChanged];
+    }
+    else
+    {
+        set1 = [[BarChartDataSet alloc] initWithYVals:yVals label:@"DataSet"];
+        set1.barSpace = 0.35;
+        [set1 setColors:ChartColorTemplates.material];
+        
+        NSMutableArray *dataSets = [[NSMutableArray alloc] init];
+        [dataSets addObject:set1];
+        
+        BarChartData *data = [[BarChartData alloc] initWithXVals:xVals dataSets:dataSets];
+        [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:10.f]];
+        
+        _chartView.data = data;
+    }
 }
 
 - (void)optionTapped:(NSString *)key

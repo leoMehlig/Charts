@@ -8,7 +8,7 @@
 //  A port of MPAndroidChart for iOS
 //  Licensed under Apache License 2.0
 //
-//  https://github.com/danielgindi/ios-charts
+//  https://github.com/danielgindi/Charts
 //
 
 import Foundation
@@ -17,13 +17,6 @@ import CoreGraphics
 #if !os(OSX)
     import UIKit
 #endif
-
-@objc
-public enum PieChartValuePosition: Int
-{
-    case InsideSlice
-    case OutsideSlice
-}
 
 @objc
 public protocol IPieChartDataSet: IChartDataSet
@@ -38,8 +31,8 @@ public protocol IPieChartDataSet: IChartDataSet
     /// indicates the selection distance of a pie slice
     var selectionShift: CGFloat { get set }
     
-    var xValuePosition: PieChartValuePosition { get set }
-    var yValuePosition: PieChartValuePosition { get set }
+    var xValuePosition: PieChartDataSet.ValuePosition { get set }
+    var yValuePosition: PieChartDataSet.ValuePosition { get set }
     
     /// When valuePosition is OutsideSlice, indicates line color
     var valueLineColor: NSUIColor? { get set }
