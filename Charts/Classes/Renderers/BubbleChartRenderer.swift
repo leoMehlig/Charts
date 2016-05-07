@@ -41,9 +41,15 @@ public class BubbleChartRenderer: ChartDataRendererBase
         }
     }
     
-    private func getShapeSize(entrySize entrySize: CGFloat, maxSize: CGFloat, reference: CGFloat) -> CGFloat
+    private func getShapeSize(
+        entrySize entrySize: CGFloat,
+                  maxSize: CGFloat,
+                  reference: CGFloat,
+                  normalizeSize: Bool) -> CGFloat
     {
-        let factor: CGFloat = (maxSize == 0.0) ? 1.0 : sqrt(entrySize / maxSize)
+        let factor: CGFloat = normalizeSize
+            ? ((maxSize == 0.0) ? 1.0 : sqrt(entrySize / maxSize))
+            : entrySize
         let shapeSize: CGFloat = reference * factor
         return shapeSize
     }
@@ -60,7 +66,7 @@ public class BubbleChartRenderer: ChartDataRendererBase
         
         let trans = dataProvider.getTransformer(dataSet.axisDependency)
         
-        let phaseX = animator.phaseX
+        let phaseX = max(0.0, min(1.0, animator.phaseX))
         let phaseY = animator.phaseY
         
         let entryCount = dataSet.entryCount
@@ -84,6 +90,8 @@ public class BubbleChartRenderer: ChartDataRendererBase
         
         CGContextSaveGState(context)
         
+        let normalizeSize = dataSet.isNormalizeSizeEnabled
+        
         // calcualte the full width of 1 step on the x-axis
         let maxBubbleWidth: CGFloat = abs(_sizeBuffer[1].x - _sizeBuffer[0].x)
         let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
@@ -97,7 +105,7 @@ public class BubbleChartRenderer: ChartDataRendererBase
             _pointBuffer.y = CGFloat(entry.value) * phaseY
             _pointBuffer = CGPointApplyAffineTransform(_pointBuffer, valueToPixelMatrix)
             
-            let shapeSize = getShapeSize(entrySize: entry.size, maxSize: dataSet.maxSize, reference: referenceSize)
+            let shapeSize = getShapeSize(entrySize: entry.size, maxSize: dataSet.maxSize, reference: referenceSize, normalizeSize: normalizeSize)
             let shapeHalf = shapeSize / 2.0
             
             if (!viewPortHandler.isInBoundsTop(_pointBuffer.y + shapeHalf)
@@ -145,7 +153,7 @@ public class BubbleChartRenderer: ChartDataRendererBase
         {
             guard let dataSets = bubbleData.dataSets as? [IBubbleChartDataSet] else { return }
             
-            let phaseX = animator.phaseX
+            let phaseX = max(0.0, min(1.0, animator.phaseX))
             let phaseY = animator.phaseY
             
             var pt = CGPoint()
@@ -228,7 +236,7 @@ public class BubbleChartRenderer: ChartDataRendererBase
         
         CGContextSaveGState(context)
         
-        let phaseX = animator.phaseX
+        let phaseX = max(0.0, min(1.0, animator.phaseX))
         let phaseY = animator.phaseY
         
         for indice in indices
@@ -261,6 +269,8 @@ public class BubbleChartRenderer: ChartDataRendererBase
             
             trans.pointValuesToPixel(&_sizeBuffer)
             
+            let normalizeSize = dataSet.isNormalizeSizeEnabled
+
             // calcualte the full width of 1 step on the x-axis
             let maxBubbleWidth: CGFloat = abs(_sizeBuffer[1].x - _sizeBuffer[0].x)
             let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
@@ -270,7 +280,7 @@ public class BubbleChartRenderer: ChartDataRendererBase
             _pointBuffer.y = CGFloat(entry.value) * phaseY
             trans.pointValueToPixel(&_pointBuffer)
             
-            let shapeSize = getShapeSize(entrySize: entry.size, maxSize: dataSet.maxSize, reference: referenceSize)
+            let shapeSize = getShapeSize(entrySize: entry.size, maxSize: dataSet.maxSize, reference: referenceSize, normalizeSize: normalizeSize)
             let shapeHalf = shapeSize / 2.0
             
             if (!viewPortHandler.isInBoundsTop(_pointBuffer.y + shapeHalf)
