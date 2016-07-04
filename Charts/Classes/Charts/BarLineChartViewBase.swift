@@ -355,17 +355,9 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
                     {
                     case .Top:
                         offsetTop += min(_legend.neededHeight, _viewPortHandler.chartHeight * _legend.maxSizePercent) + _legend.yOffset
-                        if xAxis.isEnabled && xAxis.isDrawLabelsEnabled
-                        {
-                            offsetTop += xAxis.labelRotatedHeight
-                        }
                         
                     case .Bottom:
                         offsetBottom += min(_legend.neededHeight, _viewPortHandler.chartHeight * _legend.maxSizePercent) + _legend.yOffset
-                        if xAxis.isEnabled && xAxis.isDrawLabelsEnabled
-                        {
-                            offsetBottom += xAxis.labelRotatedHeight
-                        }
                         
                     default:
                         break;
@@ -378,17 +370,9 @@ public class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChar
                 {
                 case .Top:
                     offsetTop += min(_legend.neededHeight, _viewPortHandler.chartHeight * _legend.maxSizePercent) + _legend.yOffset
-                    if xAxis.isEnabled && xAxis.isDrawLabelsEnabled
-                    {
-                        offsetTop += xAxis.labelRotatedHeight
-                    }
                     
                 case .Bottom:
                     offsetBottom += min(_legend.neededHeight, _viewPortHandler.chartHeight * _legend.maxSizePercent) + _legend.yOffset
-                    if xAxis.isEnabled && xAxis.isDrawLabelsEnabled
-                    {
-                        offsetBottom += xAxis.labelRotatedHeight
-                    }
                     
                 default:
                     break;

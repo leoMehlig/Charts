@@ -327,7 +327,7 @@ public class LineChartRenderer: LineRadarChartRenderer
         
         guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
         
-        let diff = (fromIndex == toIndex) ? 1 : 0
+        var diff = (fromIndex == toIndex) ? 1 : 0
         if dataSet.mode == .CubicBezier
         {
             diff += 1
@@ -586,14 +586,9 @@ public class LineChartRenderer: LineRadarChartRenderer
                 
                 let entryCount = dataSet.entryCount
                 
-                guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
-                guard let
-                    entryFrom = dataSet.entryForXIndex(self.minX < 0 ? 0 : self.minX, rounding: .Down),
-                    entryTo = dataSet.entryForXIndex(self.maxX, rounding: .Up)
-                    else { continue }
+                guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }                
                 
-                
-                let diff = (fromIndex == toIndex) ? 1 : 0
+                var diff = (fromIndex == toIndex) ? 1 : 0
                 if dataSet.mode == .CubicBezier
                 {
                     diff += 1
@@ -682,7 +677,7 @@ public class LineChartRenderer: LineRadarChartRenderer
             
             guard let (fromIndex, toIndex) = getFirstAndLastIndex(dataSet) else { return }
             
-            let diff = (fromIndex == toIndex) ? 1 : 0
+            var diff = (fromIndex == toIndex) ? 1 : 0
             let minx = max(fromIndex - diff, 0)
             let maxx = min(max(minx + 2, toIndex + 1), entryCount)
             if dataSet.mode == .CubicBezier
